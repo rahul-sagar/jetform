@@ -23,7 +23,7 @@ import io.jetform.core.enums.ValidationType;
 @Documented
 @Retention(RUNTIME)
 @Target({ TYPE, FIELD, METHOD })
-public @interface FormField {
+public @interface FormElement {
 	String id() default "";
 	String name() default "";
 	String label() default "";

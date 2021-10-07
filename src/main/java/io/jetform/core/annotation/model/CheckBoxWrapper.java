@@ -2,7 +2,7 @@ package io.jetform.core.annotation.model;
 
 import java.util.Arrays;
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
 
@@ -16,7 +16,7 @@ public class CheckBoxWrapper extends FormFieldBase {
 
 	}
 
-	public CheckBoxWrapper(FormField formField) {
+	public CheckBoxWrapper(FormElement formField) {
 		setId(formField.id());
 		setLabel(formField.label());
 		setPlaceHolder(formField.placeHolder());
@@ -31,7 +31,7 @@ public class CheckBoxWrapper extends FormFieldBase {
 		check(formField);
 	}
 	
-	public void check(FormField formField) {
+	public void check(FormElement formField) {
 		if(!(formField.radio().options().length == 0)) {
 			setOptions(formField.radio().options());
 		}else {

@@ -1,6 +1,6 @@
 package io.jetform.core.annotation.model;
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
 public class RadioWrapper extends FormFieldBase {
@@ -17,7 +17,7 @@ public class RadioWrapper extends FormFieldBase {
 	public RadioWrapper() {
 	}
 
-	public RadioWrapper(FormField formField) {
+	public RadioWrapper(FormElement formField) {
 		setId(formField.id());
 		setLabel(formField.label());
 		setPlaceHolder(formField.placeHolder());
@@ -40,7 +40,7 @@ public class RadioWrapper extends FormFieldBase {
 		this.dataProvider = dataProvider;
 	}
 	
-	public void check(FormField formField) {
+	public void check(FormElement formField) {
 		if((formField.radio().options().length > 0)){
 			setOptions(formField.radio().options());
 		}else {

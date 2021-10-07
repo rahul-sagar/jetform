@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.model.FormFieldBase;
 import io.jetform.core.annotation.model.FormFieldWrapper;
 
@@ -83,7 +83,7 @@ public class ScanEntity {
 			clazz = Class.forName(className);
 			Field[] declaredFields = clazz.getDeclaredFields();
 			  collect = Arrays.stream(declaredFields)
-					          .filter(e -> e.isAnnotationPresent(FormField.class) && e.getAnnotation(FormField.class).listable())
+					          .filter(e -> e.isAnnotationPresent(FormElement.class) && e.getAnnotation(FormElement.class).listable())
 					          .map(e->e.getName())
 					          .collect(Collectors.toList());
 		} catch (ClassNotFoundException e) {
@@ -118,7 +118,7 @@ public class ScanEntity {
 	 * 
 	 * } return null; }
 	 */
-	static FormFieldBase populateFieldsR(FormFieldBase form, FormField formField, Field field) {
+	static FormFieldBase populateFieldsR(FormFieldBase form, FormElement formField, Field field) {
 
 		if (formField.id().equals("")) {
 			form.setId(field.getName().toLowerCase());
@@ -137,7 +137,7 @@ public class ScanEntity {
 
 	}
 
-	static void populateFields(FormFieldBase form, List<FormFieldWrapper> fieldWrappers, FormField formField,
+	static void populateFields(FormFieldBase form, List<FormFieldWrapper> fieldWrappers, FormElement formField,
 			Field field) {
 		// TextWrapper wrapper = new TextWrapper(formField);
 		if (formField.id().equals("")) {

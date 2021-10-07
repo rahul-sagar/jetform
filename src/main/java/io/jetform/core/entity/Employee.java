@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormEntity;
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
@@ -26,22 +26,22 @@ import io.jetform.core.enums.ValidationType;
 		@FormAction(url = "/list",action = Action.READ, buttonOrLinkValue = "Read")})
 public class Employee {
 
-	@FormField(select = @Select(multiSelect = true ,options = { "F:Finance",
+	@FormElement(select = @Select(multiSelect = true ,options = { "F:Finance",
 	"M:Marketing" }))
 String department;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@FormField()
+	@FormElement()
 	Long id;
 
-	@FormField(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
+	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	String employeeName;
 
 	// @FormField(listable = true,fieldType = FieldType.RADIO, radio =
 	// @Radio(dataProvider = @DataProvider(loadType = LoadType.LAZY, path =
 	// "/gender/list", resource = ResourceType.WEB,key = "id",value = "name")))
-	@FormField(listable = true, radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
+	@FormElement(listable = true, radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
 	String gender;
 
 	
@@ -53,7 +53,7 @@ String department;
 	 * 
 	 * @Validation(type = ValidationType.MAX, value = "999999") })
 	 */
-	@FormField(listable = true,number = @Number(format="#####"))
+	@FormElement(listable = true,number = @Number(format="#####"))
 	int pinCode;
 	//@FormField()
 	int salary;

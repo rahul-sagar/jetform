@@ -2,7 +2,7 @@ package io.jetform.core.annotation.model;
 
 import java.util.Arrays;
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
 
@@ -25,7 +25,7 @@ public class SelectWrapper extends FormFieldBase {
 		// TODO Auto-generated constructor stub
 	}
 
-	public SelectWrapper(FormField formField) {
+	public SelectWrapper(FormElement formField) {
 		this.setId(formField.id());
 		this.setLabel(formField.label());
 		this.setPlaceHolder(formField.placeHolder());
@@ -61,7 +61,7 @@ public class SelectWrapper extends FormFieldBase {
 	 * 
 	 * }
 	 */
-	public void check(FormField formField) {
+	public void check(FormElement formField) {
 		if((formField.select().options().length > 0)) {
 			this.setOptions(formField.select().options());
 		}else {

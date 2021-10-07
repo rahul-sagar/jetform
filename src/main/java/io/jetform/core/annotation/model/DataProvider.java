@@ -1,7 +1,7 @@
 package io.jetform.core.annotation.model;
 
 import io.jetform.core.annotation.Checkbox;
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.enums.LoadType;
 import io.jetform.core.enums.ResourceType;
@@ -23,7 +23,7 @@ public class DataProvider {
 		this.loadType = loadType;
 	}
 	
-	public DataProvider(FormField field){
+	public DataProvider(FormElement field){
 		this.path = field.radio().dataProvider().path();
 		this.resource = field.radio().dataProvider().resource();
 		this.loadType=field.radio().dataProvider().loadType();

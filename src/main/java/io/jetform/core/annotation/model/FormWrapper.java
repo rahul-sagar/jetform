@@ -2,7 +2,7 @@ package io.jetform.core.annotation.model;
 
 import java.lang.reflect.Field;
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
 
@@ -16,7 +16,7 @@ public class FormWrapper extends FormFieldBase{
 	}
 	
 	public FormWrapper(Field field, Class clazz) {
-		FormField formField = field.getAnnotation(FormField.class);
+		FormElement formField = field.getAnnotation(FormElement.class);
 		setId(formField.id());
 		setLabel(formField.label());
 		setPlaceHolder(formField.placeHolder());

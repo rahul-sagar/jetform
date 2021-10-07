@@ -1,7 +1,7 @@
 package io.jetform.core.annotation.model;
 
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
 
@@ -10,7 +10,7 @@ public class TextWrapper extends FormFieldBase{
 	public TextWrapper() {
 		super();
 	}
-	public TextWrapper(FormField formField) {
+	public TextWrapper(FormElement formField) {
 		setId(formField.id());
 		setLabel(formField.label());
 		setPlaceHolder(formField.placeHolder());

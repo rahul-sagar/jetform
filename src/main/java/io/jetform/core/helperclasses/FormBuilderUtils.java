@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.jetform.core.annotation.FormField;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.model.Validation;
 
 
 public class FormBuilderUtils {
 
-	public static List<Validation> getValidations(FormField formField){
+	public static List<Validation> getValidations(FormElement formField){
 		
 		List<Validation> collect = Arrays.stream(formField.validations())
 		      .map(validation -> new Validation(validation.type().name(), validation.value()))
