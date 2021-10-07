@@ -2,6 +2,8 @@ package io.jetform.core.annotation.model;
 
 import java.util.List;
 
+import io.jetform.core.annotation.JetForm;
+
 public class JetFormWrapper {
 	private String id;
 	private String name;
@@ -9,6 +11,12 @@ public class JetFormWrapper {
 	private List<FormAction> formAction;
 	private List<FormElementWrapper> formElementWrappers;
 
+	public JetFormWrapper(JetForm jetForm){
+		this.id = jetForm.id();
+		this.name = jetForm.name();
+		this.title = jetForm.title();
+	}
+	
 	public String getId() {
 		return id;
 	}

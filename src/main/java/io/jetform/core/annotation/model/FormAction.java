@@ -14,8 +14,12 @@ public class FormAction {
 
 	public FormAction() {}
 	
-	public FormAction(FormAction formAction) {
-		
+	public FormAction(io.jetform.core.annotation.FormAction formAction) {
+		 this.URL = formAction.url();
+		 this.action = formAction.action();
+		 this.type = formAction.type();
+		 this.ctaType = formAction.ctaType();
+		 this.buttonOrLinkValue = formAction.buttonOrLinkValue();
 	}
 	
 	public String getURL() {

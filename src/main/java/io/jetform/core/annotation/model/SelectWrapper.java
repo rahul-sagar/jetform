@@ -3,6 +3,7 @@ package io.jetform.core.annotation.model;
 import java.util.Arrays;
 
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Select;
 import io.jetform.core.enums.FieldType;
 
 
@@ -24,7 +25,13 @@ public class SelectWrapper extends FormElementWrapper {
 	public SelectWrapper() {
 		// TODO Auto-generated constructor stub
 	}
-
+	
+	public SelectWrapper(Select select) {
+       
+		this.setMultiSelect(select.multiSelect());
+		check(select);
+	}
+	
 	public SelectWrapper(FormElement formField) {
 		this.setId(formField.id());
 		this.setLabel(formField.label());
@@ -38,20 +45,7 @@ public class SelectWrapper extends FormElementWrapper {
 		this.setFieldType(FieldType.SELECT.name());
 		this.setListable(formField.listable());
 		this.setMultiSelect(formField.select().multiSelect());
-		//this.setOptions(formField.select().options());
-		//this.setDataProvider(new DataProvider(formField.select()));
-		//(formField.select().options().length > 0) ? setOptions(formField.select().options()) : setDataProvider(new DataProvider(formField.select()));
-		//setCallBackUrl(formField.type().select().callBackUrl());
-		//setSelectionType(formField.select().selectionType());
-		/*
-		 * if((formField.select().options().length > 0)) {
-		 * System.out.println("Inside op");
-		 * System.out.println(Arrays.toString(formField.select().options()));
-		 * this.setOptions(formField.radio().options()); System.out.println(this); }else
-		 * { System.out.println("Inside data"); this.setDataProvider(new
-		 * DataProvider(formField.checkbox())); }
-		 */
-		check(formField);
+	//	check(formField);
 	}
 	
 	/*
@@ -61,11 +55,17 @@ public class SelectWrapper extends FormElementWrapper {
 	 * 
 	 * }
 	 */
-	public void check(FormElement formField) {
-		if((formField.select().options().length > 0)) {
-			this.setOptions(formField.select().options());
+	/*
+	 * public void check(FormElement formField) {
+	 * if((formField.select().options().length > 0)) {
+	 * this.setOptions(formField.select().options()); }else {
+	 * this.setDataProvider(new DataProvider(formField.select())); } }
+	 */
+	public void check(Select select) {
+		if((select.options().length > 0)) {
+			this.setOptions(select.options());
 		}else {
-			this.setDataProvider(new DataProvider(formField.select()));
+			this.setDataProvider(new DataProvider(select));
 		}
 	}
 
@@ -105,8 +105,5 @@ public class SelectWrapper extends FormElementWrapper {
 				+ ", readOnly=" + readOnly + ", disabled=" + disabled + ", listable=" + listable + ", fieldType="
 				+ fieldType + ", validtions=" + validtions + "]";
 	}
-
-	
-
 	
 }

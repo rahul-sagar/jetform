@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormEntity;
+import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
@@ -19,7 +20,7 @@ import io.jetform.core.enums.ValidationType;
 
 @Entity
 @Table(name = "tbl_employee")
-@FormEntity(actions = {
+@JetForm(actions = {
 		@FormAction(url = "/create", action = Action.CREATE, buttonOrLinkValue = "Create"),
 		@FormAction(url="/update",action = Action.UPDATE, buttonOrLinkValue = "Update"),
 		@FormAction(url = "/delete",action = Action.DELETE, buttonOrLinkValue = "Delete"),

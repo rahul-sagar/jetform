@@ -9,7 +9,7 @@ import io.jetform.core.annotation.model.JetFormWrapper;
 public interface FormRenderer {
 	
 	JetFormWrapper getFormByClass(String formClass);
-	JetFormWrapper getFormByClass(Class formClass);
+	JetFormWrapper getFormByClass(Class<?> formClass);
 	JetFormWrapper readForm(JetForm formAnnotation);
-	List<FormElementWrapper> readFormElements(Class formClass);
+	List<FormElementWrapper> readFormElements(Class<?> formClass);
 }
