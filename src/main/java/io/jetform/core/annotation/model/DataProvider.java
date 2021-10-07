@@ -2,6 +2,7 @@ package io.jetform.core.annotation.model;
 
 import io.jetform.core.annotation.Checkbox;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.enums.LoadType;
 import io.jetform.core.enums.ResourceType;
@@ -47,6 +48,13 @@ public class DataProvider {
 		this.value = select.dataProvider().value();
 	}
 	
+	public DataProvider(Radio radio){
+		this.path = radio.dataProvider().path();
+		this.resource = radio.dataProvider().resource();
+		this.loadType = radio.dataProvider().loadType();
+		this.key = radio.dataProvider().key();
+		this.value = radio.dataProvider().value();
+	}
 	
 	public String getPath() {
 		return path;

@@ -1,5 +1,7 @@
 package io.jetform.core.annotation.processor;
 
+import java.lang.reflect.Field;
+
 import io.jetform.core.annotation.Checkbox;
 import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.Form;
@@ -19,6 +21,7 @@ import io.jetform.core.annotation.model.TextWrapper;
 
 public interface FormElementProcessor {
 	FormElementWrapper process(FormElement annotation);
+	FormElementWrapper process(Field field);
 	CheckBoxWrapper process(Checkbox annotation);
 	RadioWrapper process(Radio annotation);
 	SelectWrapper process(Select select);

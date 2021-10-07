@@ -2,6 +2,7 @@ package io.jetform.core.annotation.model;
 
 
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Text;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
 
@@ -23,6 +24,10 @@ public class TextWrapper extends FormElementWrapper{
 		setFieldType(FieldType.TEXT.name());
 		setListable(formField.listable());
 		setValidtions(FormBuilderUtils.getValidations(formField));
+	}
+	
+	public TextWrapper(Text text) {
+		setFieldType(FieldType.TEXT.name());
 	}
 	
 	/*

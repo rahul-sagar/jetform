@@ -1,6 +1,7 @@
 package io.jetform.core.annotation.model;
 
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Number;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
 
@@ -25,6 +26,11 @@ public class NumberWrapper extends FormElementWrapper{
 		setListable(formField.listable());
 		setFormat(formField.number().format());
 		setValidtions(FormBuilderUtils.getValidations(formField));
+	}
+	public NumberWrapper(Number number) {
+		
+		setFieldType(FieldType.NUMBER.name());
+		setFormat(number.format());
 	}
 	
 	public String getFormat() {

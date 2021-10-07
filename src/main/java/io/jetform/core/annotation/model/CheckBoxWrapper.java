@@ -2,6 +2,7 @@ package io.jetform.core.annotation.model;
 
 import java.util.Arrays;
 
+import io.jetform.core.annotation.Checkbox;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
@@ -14,6 +15,12 @@ public class CheckBoxWrapper extends FormElementWrapper {
 
 	public CheckBoxWrapper() {
 
+	}
+	
+	public CheckBoxWrapper(Checkbox checkbox) {
+		setMultiSelect(checkbox.multiSelect());
+		setFieldType(FieldType.CHECKBOX.name());
+		check(checkbox);
 	}
 
 	public CheckBoxWrapper(FormElement formField) {
@@ -28,14 +35,20 @@ public class CheckBoxWrapper extends FormElementWrapper {
 		setValue(formField.value());
 		setFieldType(FieldType.CHECKBOX.name());
 		setListable(formField.listable());
-		check(formField);
+		//check(formField);
 	}
+	/*
+	 * public void check(FormElement formField) {
+	 * if(!(formField.radio().options().length == 0)) {
+	 * setOptions(formField.radio().options()); }else { setDataProvider(new
+	 * DataProvider(formField.checkbox())); } }
+	 */
 	
-	public void check(FormElement formField) {
-		if(!(formField.radio().options().length == 0)) {
-			setOptions(formField.radio().options());
+	public void check(Checkbox checkbox) {
+		if(!(checkbox.options().length == 0)) {
+			setOptions(checkbox.options());
 		}else {
-			setDataProvider(new DataProvider(formField.checkbox()));
+			setDataProvider(new DataProvider(checkbox));
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package io.jetform.core.annotation.model;
 
+import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
@@ -24,6 +25,10 @@ public class EmailWrapper extends FormElementWrapper {
 		setListable(formField.listable());
 		setPattern(formField.email().pattern());
 		setValidtions(FormBuilderUtils.getValidations(formField));
+	}
+	public EmailWrapper(Email email) {
+		setFieldType(FieldType.EMAIL.name());
+		setPattern(email.pattern());
 	}
 
 	public String getPattern() {
