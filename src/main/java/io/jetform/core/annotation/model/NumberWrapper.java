@@ -4,7 +4,7 @@ import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
 
-public class NumberWrapper extends FormFieldBase{
+public class NumberWrapper extends FormElementWrapper{
 	private String format;
 
 	public NumberWrapper() {

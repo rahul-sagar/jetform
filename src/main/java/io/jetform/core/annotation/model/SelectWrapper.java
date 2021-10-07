@@ -6,7 +6,7 @@ import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
 
-public class SelectWrapper extends FormFieldBase {
+public class SelectWrapper extends FormElementWrapper {
 	//private String callBackUrl;
 	//private SelectionType selectionType;
 	private DataProvider dataProvider;

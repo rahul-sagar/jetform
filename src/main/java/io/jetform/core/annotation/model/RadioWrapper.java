@@ -3,7 +3,7 @@ package io.jetform.core.annotation.model;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
-public class RadioWrapper extends FormFieldBase {
+public class RadioWrapper extends FormElementWrapper {
 	private DataProvider dataProvider;
 	private String[] options;
 	public String[] getOptions() {

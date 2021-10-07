@@ -4,7 +4,7 @@ import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
 
-public class EmailWrapper extends FormFieldBase {
+public class EmailWrapper extends FormElementWrapper {
 	private String pattern;
 
 	public EmailWrapper() {}

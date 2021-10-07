@@ -6,7 +6,7 @@ import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 
 
-public class CheckBoxWrapper extends FormFieldBase {
+public class CheckBoxWrapper extends FormElementWrapper {
 
 	private DataProvider dataProvider;
 	private boolean multiSelect;

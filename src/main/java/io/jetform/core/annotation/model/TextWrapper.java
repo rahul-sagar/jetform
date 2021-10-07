@@ -5,7 +5,7 @@ import io.jetform.core.annotation.FormElement;
 import io.jetform.core.enums.FieldType;
 import io.jetform.core.helperclasses.FormBuilderUtils;
 
-public class TextWrapper extends FormFieldBase{
+public class TextWrapper extends FormElementWrapper{
 	
 	public TextWrapper() {
 		super();
