@@ -37,38 +37,38 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		return (FormElementWrapper) processFieldElement;
 	}
 
-	@Override
-	public SelectWrapper process(Select select) {
+
+	private SelectWrapper process(Select select) {
 		return new SelectWrapper(select);
 	}
 
-	@Override
-	public NumberWrapper process(Number number) {
+
+	private NumberWrapper process(Number number) {
 		return new NumberWrapper(number);
 	}
 
-	@Override
-	public EmailWrapper process(Email email) {
+
+	private EmailWrapper process(Email email) {
 		return new EmailWrapper(email);
 	}
 
-	@Override
-	public TextWrapper process(Text text) {
+
+	private TextWrapper process(Text text) {
 		return new TextWrapper(text);
 	}
 
-	@Override
-	public FormWrapper process(Form form) {
+
+	private FormWrapper process(Form form) {
 		return null;
 	}
 
-	@Override
-	public CheckBoxWrapper process(Checkbox checkbox) {
+
+	private CheckBoxWrapper process(Checkbox checkbox) {
 		return new CheckBoxWrapper();
 	}
 
-	@Override
-	public RadioWrapper process(Radio radio) {
+
+	private RadioWrapper process(Radio radio) {
 		return new RadioWrapper(radio);
 	}
 
