@@ -12,11 +12,8 @@ public class Testing {
 		FormRenderer formRenderer = new FormRendererImpl();
 		JetFormWrapper jetFormWrapper = formRenderer.getFormByClass("io.jetform.core.entity.Employee");
 		
-		
 		Gson gson = new Gson();
               String json = gson.toJson(jetFormWrapper);
               System.out.println(json);
-		
 	}
-
 }

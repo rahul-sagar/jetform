@@ -7,9 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import io.jetform.core.annotation.FormAction;
-import io.jetform.core.annotation.FormEntity;
-import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
@@ -17,20 +16,15 @@ import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
 import io.jetform.core.enums.ValidationType;
 
-
 @Entity
 @Table(name = "tbl_employee")
-@JetForm(actions = {
-		@FormAction(url = "/create", action = Action.CREATE, buttonOrLinkValue = "Create"),
-		@FormAction(url="/update",action = Action.UPDATE, buttonOrLinkValue = "Update"),
-		@FormAction(url = "/delete",action = Action.DELETE, buttonOrLinkValue = "Delete"),
-		@FormAction(url = "/list",action = Action.READ, buttonOrLinkValue = "Read")})
+@JetForm(actions = { @FormAction(url = "/create", action = Action.CREATE, buttonOrLinkValue = "Create"),
+		@FormAction(url = "/update", action = Action.UPDATE, buttonOrLinkValue = "Update"),
+		@FormAction(url = "/delete", action = Action.DELETE, buttonOrLinkValue = "Delete"),
+		@FormAction(url = "/list", action = Action.READ, buttonOrLinkValue = "Read") })
 public class Employee {
 
-	@FormElement(select = @Select(multiSelect = true ,options = { "F:Finance",
-	"M:Marketing" }))
-String department;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@FormElement()
@@ -38,6 +32,7 @@ String department;
 
 	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	String employeeName;
+	
 
 	// @FormField(listable = true,fieldType = FieldType.RADIO, radio =
 	// @Radio(dataProvider = @DataProvider(loadType = LoadType.LAZY, path =
@@ -45,7 +40,8 @@ String department;
 	@FormElement(listable = true, radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
 	String gender;
 
-	
+	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }))
+	String department;
 	/*
 	 * @FormField(listable = true ,fieldType = FieldType.NUMBER, number
 	 * = @Number(format = "######"),validations = {
@@ -54,9 +50,10 @@ String department;
 	 * 
 	 * @Validation(type = ValidationType.MAX, value = "999999") })
 	 */
-	@FormElement(listable = true,number = @Number(format="#####"))
+	@FormElement(listable = true, number = @Number(format = "#####"))
 	int pinCode;
-	//@FormField()
+	// @FormField()
+	@FormElement(listable=true,number=@Number(format="#####"))
 	int salary;
 	/*
 	 * @FormField(fieldType = FieldType.CHECKBOX,checkbox = @Checkbox(selectionType
@@ -72,10 +69,11 @@ String department;
 	 */
 
 	// @JoinColumn(name = "contactId")
-	//@FormField(form = @Form(childKey = "contactId", parentKey = "empId"))
+	// @FormField(form = @Form(childKey = "contactId", parentKey = "empId"))
 //	private Contact contact;
+	@FormElement(number=@Number())
 	int age;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -115,7 +113,7 @@ String department;
 	public void setAge(int age) {
 		this.age = age;
 	}
-	
+
 	public int getSalary() {
 		return salary;
 	}
