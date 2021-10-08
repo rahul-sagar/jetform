@@ -1,6 +1,7 @@
 package io.jetform.core.annotation.model;
 
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Radio;
 import io.jetform.core.enums.FieldType;
 
 public class RadioWrapper extends FormElementWrapper {
@@ -16,6 +17,13 @@ public class RadioWrapper extends FormElementWrapper {
 
 	public RadioWrapper() {
 	}
+	
+	public RadioWrapper(Radio radio) {
+		
+		setFieldType(FieldType.RADIO.name());
+		check(radio);
+		//setDataProvider(new DataProvider(formField));
+	}
 
 	public RadioWrapper(FormElement formField) {
 		setId(formField.id());
@@ -29,7 +37,7 @@ public class RadioWrapper extends FormElementWrapper {
 		setValue(formField.value());
 		setFieldType(FieldType.RADIO.name());
 		setListable(formField.listable());
-		check(formField);
+		//check(formField);
 		//setDataProvider(new DataProvider(formField));
 	}
 	public DataProvider getDataProvider() {
@@ -40,15 +48,24 @@ public class RadioWrapper extends FormElementWrapper {
 		this.dataProvider = dataProvider;
 	}
 	
-	public void check(FormElement formField) {
-		if((formField.radio().options().length > 0)){
-			setOptions(formField.radio().options());
+	public void check(Radio radio) {
+		if((radio.options().length > 0)){
+			setOptions(radio.options());
 		}else {
-			formField.radio().dataProvider();
-			setDataProvider(new DataProvider(formField));
+			setDataProvider(new DataProvider(radio));
 		}
 		
 	}
+	
+	/*
+	 * public void check(FormElement formField) {
+	 * if((formField.radio().options().length > 0)){
+	 * setOptions(formField.radio().options()); }else {
+	 * formField.radio().dataProvider(); setDataProvider(new
+	 * DataProvider(formField)); }
+	 * 
+	 * }
+	 */
 	/*
 	 * @Override public String toString() { return "RadioWrapper [dataProvider=" +
 	 * dataProvider + ", getId()=" + getId() + ", getName()=" + getName() +

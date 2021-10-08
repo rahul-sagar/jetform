@@ -29,6 +29,7 @@ public class SelectWrapper extends FormElementWrapper {
 	public SelectWrapper(Select select) {
        
 		this.setMultiSelect(select.multiSelect());
+		this.setFieldType(FieldType.SELECT.name());
 		check(select);
 	}
 	
