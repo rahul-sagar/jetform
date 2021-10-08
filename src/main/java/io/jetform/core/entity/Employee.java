@@ -71,7 +71,7 @@ public class Employee {
 	// @JoinColumn(name = "contactId")
 	// @FormField(form = @Form(childKey = "contactId", parentKey = "empId"))
 //	private Contact contact;
-	@FormElement(number=@Number())
+	@FormElement(number=@Number(format = "####"))
 	int age;
 
 	public Long getId() {

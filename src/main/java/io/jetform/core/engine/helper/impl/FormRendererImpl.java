@@ -39,7 +39,7 @@ public class FormRendererImpl implements FormRenderer{
 		}
 	     populate(jetFormWrapper, clazz.getSimpleName(), jetForm);
 		List<FormElementWrapper> readFormElements = readFormElements(clazz);
-		jetFormWrapper.setFormElementWrappers(readFormElements);
+		jetFormWrapper.setElements(readFormElements);
 		return jetFormWrapper;
 	}
 
@@ -50,7 +50,7 @@ public class FormRendererImpl implements FormRenderer{
 		List<FormAction> collect = Arrays.stream(jetFormAnnotation.actions())
 				                         .map(e -> new FormAction(e))
 				                         .collect(Collectors.toList());
-		formWrapper.setFormAction(collect);
+		formWrapper.setActions(collect);
 		
 		return formWrapper;
 	}
@@ -70,7 +70,7 @@ public class FormRendererImpl implements FormRenderer{
 	private void populate(JetFormWrapper jetFormWrapper, String className, JetForm jetForm) {
 
 		if (jetForm.id().equals("")) {
-			jetFormWrapper.setId(className);
+			jetFormWrapper.setId(className+"_12345");
 		}
 		if (jetForm.name().equals("")) {
 			jetFormWrapper.setName(className);
