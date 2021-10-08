@@ -10,7 +10,7 @@ public class Testing {
 
 	public static void main(String[] args) {
 		FormRenderer formRenderer = new FormRendererImpl();
-		JetFormWrapper jetFormWrapper = formRenderer.getFormByClass("io.jetform.core.entity.Employee");
+		JetFormWrapper jetFormWrapper = formRenderer.getForm("io.jetform.core.entity.Employee");
 		
 		Gson gson = new Gson();
               String json = gson.toJson(jetFormWrapper);

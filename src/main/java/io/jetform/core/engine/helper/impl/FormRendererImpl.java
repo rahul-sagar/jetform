@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.JetForm;
-import io.jetform.core.annotation.model.FormAction;
+import io.jetform.core.annotation.model.FormActionWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
@@ -18,11 +18,11 @@ import io.jetform.core.helperclasses.JetFormUtils;
 public class FormRendererImpl implements FormRenderer{
 
 	@Override
-	public JetFormWrapper getFormByClass(String formClass) {
+	public JetFormWrapper getForm(String formClass) {
 		JetFormWrapper jetFormWrapper = null;
 		try {
 			Class<?> forName = Class.forName(formClass);
-			 jetFormWrapper = getFormByClass(forName);
+			 jetFormWrapper = getForm(forName);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -30,25 +30,25 @@ public class FormRendererImpl implements FormRenderer{
 	}
 
 	@Override
-	public JetFormWrapper getFormByClass(Class<?> clazz) {
+	public JetFormWrapper getForm(Class<?> clazz) {
 		JetFormWrapper jetFormWrapper = null;
 		JetForm jetForm = null;
 		if(clazz.isAnnotationPresent(JetForm.class)) {
 			jetForm = clazz.getAnnotation(JetForm.class);
-			jetFormWrapper = readForm(jetForm);
+			jetFormWrapper = getForm(jetForm);
 		}
 	     populate(jetFormWrapper, clazz.getSimpleName(), jetForm);
-		List<FormElementWrapper> readFormElements = readFormElements(clazz);
+		List<FormElementWrapper> readFormElements = getFormElements(clazz);
 		jetFormWrapper.setElements(readFormElements);
 		return jetFormWrapper;
 	}
 
 	@Override
-	public JetFormWrapper readForm(JetForm jetFormAnnotation) {
+	public JetFormWrapper getForm(JetForm jetFormAnnotation) {
 		JetFormWrapper formWrapper = new JetFormWrapper(jetFormAnnotation);
 		    
-		List<FormAction> collect = Arrays.stream(jetFormAnnotation.actions())
-				                         .map(e -> new FormAction(e))
+		List<FormActionWrapper> collect = Arrays.stream(jetFormAnnotation.actions())
+				                         .map(e -> new FormActionWrapper(e))
 				                         .collect(Collectors.toList());
 		formWrapper.setActions(collect);
 		
@@ -56,7 +56,7 @@ public class FormRendererImpl implements FormRenderer{
 	}
 
 	@Override
-	public List<FormElementWrapper> readFormElements(Class<?> clazz) {
+	public List<FormElementWrapper> getFormElements(Class<?> clazz) {
 		FormElementProcessor formElementProcessor= new FormElementProcessorImpl();
 
 		return Arrays.stream(clazz.getDeclaredFields())
@@ -70,7 +70,7 @@ public class FormRendererImpl implements FormRenderer{
 	private void populate(JetFormWrapper jetFormWrapper, String className, JetForm jetForm) {
 
 		if (jetForm.id().equals("")) {
-			jetFormWrapper.setId(className+"_12345");
+			jetFormWrapper.setId(className.toLowerCase()+"_12345");
 		}
 		if (jetForm.name().equals("")) {
 			jetFormWrapper.setName(className);

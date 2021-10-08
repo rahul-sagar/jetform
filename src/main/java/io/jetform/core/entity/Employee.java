@@ -14,16 +14,16 @@ import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
+import io.jetform.core.enums.Type;
 import io.jetform.core.enums.ValidationType;
 
 @Entity
 @Table(name = "tbl_employee")
-@JetForm(actions = { @FormAction(url = "/create", action = Action.CREATE, buttonOrLinkValue = "Create"),
-		@FormAction(url = "/update", action = Action.UPDATE, buttonOrLinkValue = "Update"),
-		@FormAction(url = "/delete", action = Action.DELETE, buttonOrLinkValue = "Delete"),
-		@FormAction(url = "/list", action = Action.READ, buttonOrLinkValue = "Read") })
+@JetForm(actions = { @FormAction(name = "/create", action = Action.CREATE,type=Type.BUTTON, label = "Create"),
+		@FormAction(name = "/update", action = Action.UPDATE,type=Type.BUTTON, label = "Update"),
+		@FormAction(name = "/delete", action = Action.DELETE,type=Type.BUTTON, label = "Delete"),
+		@FormAction(name = "/list", action = Action.READ,type=Type.BUTTON, label = "Read") })
 public class Employee {
-
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

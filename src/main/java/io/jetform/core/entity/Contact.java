@@ -15,10 +15,10 @@ import io.jetform.core.enums.Action;
 @Entity
 @Table(name = "pis_contact")
 @FormEntity(actions = {
-		@FormAction(url = "/create", action = Action.CREATE, buttonOrLinkValue = "Create"),
-		@FormAction(url="/update",action = Action.UPDATE, buttonOrLinkValue = "Update"),
-		@FormAction(url = "/delete",action = Action.DELETE, buttonOrLinkValue = "Delete"),
-		@FormAction(url = "/list",action = Action.READ, buttonOrLinkValue = "Read")})
+		@FormAction(name = "/create", action = Action.CREATE, label = "Create"),
+		@FormAction(name="/update",action = Action.UPDATE, label = "Update"),
+		@FormAction(name = "/delete",action = Action.DELETE, label = "Delete"),
+		@FormAction(name = "/list",action = Action.READ, label = "Read")})
 public class Contact {
 
 	@Id

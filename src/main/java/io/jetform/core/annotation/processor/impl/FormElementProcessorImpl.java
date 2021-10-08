@@ -99,7 +99,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 
 	private FormElementWrapper populate(FormElementWrapper formElementWrapper, FormElement formElement, Field field) {
 		if (formElement.id().equals("")) {
-			formElementWrapper.setId(field.getName());
+			formElementWrapper.setId(field.getName().toLowerCase());
 		}
 		if (formElement.name().equals("")) {
 			formElementWrapper.setName(field.getName());
@@ -118,11 +118,9 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		}
 
 		formElementWrapper.setDisabled(formElement.disabled());
-		formElementWrapper.setErrorMessage(formElement.errorMessage());
 		formElementWrapper.setListable(formElement.listable());
 		formElementWrapper.setReadOnly(formElement.readOnly());
-		formElementWrapper.setRequired(formElement.required());
-		formElementWrapper.setValidtions(JetFormUtils.getValidations(formElement));
+		formElementWrapper.setValidations(JetFormUtils.getValidations(formElement));
 		return formElementWrapper;
 	}
 }
