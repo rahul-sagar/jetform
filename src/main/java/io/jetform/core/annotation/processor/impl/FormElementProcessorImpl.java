@@ -2,6 +2,8 @@ package io.jetform.core.annotation.processor.impl;
 
 import java.lang.reflect.Field;
 
+import org.springframework.stereotype.Component;
+
 import io.jetform.core.annotation.Checkbox;
 import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.Form;
@@ -21,6 +23,7 @@ import io.jetform.core.annotation.model.TextWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
 import io.jetform.core.helperclasses.JetFormUtils;
 
+@Component
 public class FormElementProcessorImpl implements FormElementProcessor {
 
 	@Override

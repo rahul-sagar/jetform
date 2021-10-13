@@ -3,6 +3,8 @@ package io.jetform.core.engine.helper.impl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.JetForm;
@@ -16,7 +18,10 @@ import io.jetform.core.helperclasses.JetFormUtils;
 
 @Component
 public class FormRendererImpl implements FormRenderer{
-
+	
+	@Autowired
+	private FormElementProcessor formElementProcessor;
+	
 	@Override
 	public JetFormWrapper getForm(String formClass) {
 		JetFormWrapper jetFormWrapper = null;
@@ -57,7 +62,7 @@ public class FormRendererImpl implements FormRenderer{
 
 	@Override
 	public List<FormElementWrapper> getFormElements(Class<?> clazz) {
-		FormElementProcessor formElementProcessor= new FormElementProcessorImpl();
+		//FormElementProcessor formElementProcessor= new FormElementProcessorImpl();
 
 		return Arrays.stream(clazz.getDeclaredFields())
 		      .filter(e -> e.isAnnotationPresent(FormElement.class))
