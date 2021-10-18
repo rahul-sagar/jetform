@@ -1,16 +1,7 @@
 package io.jetform.core;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-
-import io.jetform.core.annotation.FormEntity;
-import io.jetform.core.annotation.JetForm;
 
 @SpringBootApplication
 public class JetformApplication {
