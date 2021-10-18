@@ -40,7 +40,7 @@ public class Employee {
 	@FormElement(listable = true, radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
 	String gender;
 
-	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }))
+	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }),listable=true)
 	String department;
 	/*
 	 * @FormField(listable = true ,fieldType = FieldType.NUMBER, number
