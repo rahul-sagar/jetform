@@ -43,6 +43,5 @@ public class jetFormController {
 		String json = gson.toJson(jetFormService.getList(className));
 		System.out.println("Json:"+json);
 		return json;
-	}
-	
+	}	
 }
