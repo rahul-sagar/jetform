@@ -27,7 +27,7 @@ public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@FormElement()
+	@FormElement
 	Long id;
 
 	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })

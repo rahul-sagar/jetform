@@ -7,14 +7,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.FormAction;
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.FormEntity;
+import io.jetform.core.annotation.JetForm;
+import io.jetform.core.annotation.Number;
+import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
+import io.jetform.core.enums.ValidationType;
 
 
 @Entity
 @Table(name = "pis_contact")
-@FormEntity(actions = {
+@JetForm(actions= {
 		@FormAction(name = "/create", action = Action.CREATE, label = "Create"),
 		@FormAction(name="/update",action = Action.UPDATE, label = "Update"),
 		@FormAction(name = "/delete",action = Action.DELETE, label = "Delete"),
@@ -23,23 +29,31 @@ public class Contact {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "contactId")		
+	@Column(name = "contactId")
+	@FormElement
 	private long id;
+	
+	@FormElement(email=@Email(pattern="######"),listable=true,validations= @Validation(type=ValidationType.REQUIRED,value="true"))
 	private String altEmailAddress;
+	
+	@FormElement(number=@Number(format="#####"),validations=@Validation(type=ValidationType.REQUIRED,value="true"),listable=true)
 	private String  emergencyMobile;
-	private String facebookId; 
-	private String instagramId;
+	
+		
+	@FormElement
 	private String linkedInId;
+	
+	@FormElement(number=@Number(format="######"),listable=true)
 	private String mobile;
-	private String phone; 
-	private String twitterId;
-	private String landline;
-	private String emergencyNo;
-	private String fax;
-	private String telegram;
-	private String telex; 
+
+	
+	@FormElement
 	private String personalEmail ;
+	
+	@FormElement
 	private boolean deleted;
+	
+	@FormElement
 	private int status;
 
 	
@@ -74,18 +88,8 @@ public class Contact {
 	public void setEmergencyMobile(String emergencyMobile) {
 		this.emergencyMobile = emergencyMobile;
 	}
-	public String getFacebookId() {
-		return facebookId;
-	}
-	public void setFacebookId(String facebookId) {
-		this.facebookId = facebookId;
-	}
-	public String getInstagramId() {
-		return instagramId;
-	}
-	public void setInstagramId(String instagramId) {
-		this.instagramId = instagramId;
-	}
+
+
 	public String getLinkedInId() {
 		return linkedInId;
 	}
@@ -98,48 +102,7 @@ public class Contact {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public String getPhone() {
-		return phone;
-	}
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	public String getTwitterId() {
-		return twitterId;
-	}
-	public void setTwitterId(String twitterId) {
-		this.twitterId = twitterId;
-	}
-	public String getLandline() {
-		return landline;
-	}
-	public void setLandline(String landline) {
-		this.landline = landline;
-	}
-	public String getEmergencyNo() {
-		return emergencyNo;
-	}
-	public void setEmergencyNo(String emergencyNo) {
-		this.emergencyNo = emergencyNo;
-	}
-	public String getFax() {
-		return fax;
-	}
-	public void setFax(String fax) {
-		this.fax = fax;
-	}
-	public String getTelegram() {
-		return telegram;
-	}
-	public void setTelegram(String telegram) {
-		this.telegram = telegram;
-	}
-	public String getTelex() {
-		return telex;
-	}
-	public void setTelex(String telex) {
-		this.telex = telex;
-	}
+	
 	public String getPersonalEmail() {
 		return personalEmail;
 	}
