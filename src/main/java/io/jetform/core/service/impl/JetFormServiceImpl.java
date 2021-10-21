@@ -84,5 +84,9 @@ public class JetFormServiceImpl implements JetFormService {
 		return repository.getEntity(id, clazz);
 	}
 	
+	public JetFormWrapper getFormWrapper(String className) {
+		
+		return formRenderer.getForm(className);
+	}
 	
 }
