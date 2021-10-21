@@ -25,5 +25,11 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 		return query.getResultList();
 	}
 
+	public Object getEntity(Long id,Class<?> clazz) {
+		TypedQuery<?> query=entityManager.createQuery("select e from "+clazz.getName()+" e where id="+id, clazz);
+		Object singleResult = query.getSingleResult();
+		System.out.println("entity: "+singleResult);
+		return null;
+	}
 	
 }

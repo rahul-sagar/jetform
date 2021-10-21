@@ -6,4 +6,5 @@ public interface JetFormService {
     public String getFormJson(String className);
     public List  getList(String className);
     public List<String> getEntities();
+    public Object getEntity(long id , String clasName);
 }

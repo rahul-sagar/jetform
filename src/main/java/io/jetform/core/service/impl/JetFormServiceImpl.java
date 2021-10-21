@@ -70,4 +70,19 @@ public class JetFormServiceImpl implements JetFormService {
 		return fullQualifiedName;
 	}
 
+	@Override
+	public Object getEntity(long id, String clasName) {
+		
+		Class<?> clazz=null;
+		try {
+			clazz = Class.forName(clasName);
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return repository.getEntity(id, clazz);
+	}
+	
+	
 }
