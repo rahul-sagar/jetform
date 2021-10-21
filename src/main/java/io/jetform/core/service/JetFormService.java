@@ -5,9 +5,9 @@ import java.util.List;
 import io.jetform.core.annotation.model.JetFormWrapper;
 
 public interface JetFormService {
-    public String getFormJson(String className);
-    public List  getList(String className);
-    public List<String> getEntities();
-    public Object getEntity(long id , String clasName);
+     String getFormJson(String className);
+     List  getList(String className);
+     List<String> getEntities();
     JetFormWrapper getFormWrapper(String className);
+    JetFormWrapper getFormWrapperWithValues(Long id,String className);
 }

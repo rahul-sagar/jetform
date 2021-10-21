@@ -17,6 +17,7 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	@PersistenceContext
 	EntityManager entityManager;
 	
+	
 	@Override
 	@Transactional
 	public List getAll(Class<?> clazz) {
@@ -28,6 +29,7 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	public Object getEntity(Long id,Class<?> clazz) {
 		TypedQuery<?> query=entityManager.createQuery("select e from "+clazz.getName()+" e where id="+id, clazz);
 		Object entity = query.getSingleResult();
+		
 		return entity;
 	}
 	
