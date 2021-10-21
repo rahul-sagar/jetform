@@ -11,6 +11,7 @@ import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.FormEntity;
+import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Validation;
@@ -30,7 +31,7 @@ public class Contact {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "contactId")
-	@FormElement
+	@FormElement(hidden = @Hidden(value = "0"))
 	private long id;
 	
 	@FormElement(email=@Email(pattern="######"),listable=true,validations= @Validation(type=ValidationType.REQUIRED,value="true"))

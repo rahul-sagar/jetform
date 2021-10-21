@@ -8,6 +8,7 @@ import io.jetform.core.annotation.Checkbox;
 import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
@@ -16,6 +17,7 @@ import io.jetform.core.annotation.model.CheckBoxWrapper;
 import io.jetform.core.annotation.model.EmailWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.FormWrapper;
+import io.jetform.core.annotation.model.HiddenWrapper;
 import io.jetform.core.annotation.model.NumberWrapper;
 import io.jetform.core.annotation.model.RadioWrapper;
 import io.jetform.core.annotation.model.SelectWrapper;
@@ -60,16 +62,17 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		return new TextWrapper(text);
 	}
 
+	private HiddenWrapper process(Hidden hidden) {
+		return new HiddenWrapper(hidden);
+	}
 
 	private FormWrapper process(Form form) {
 		return null;
 	}
 
-
 	private CheckBoxWrapper process(Checkbox checkbox) {
 		return new CheckBoxWrapper();
 	}
-
 
 	private RadioWrapper process(Radio radio) {
 		return new RadioWrapper(radio);
@@ -85,6 +88,8 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 			return process(formElement.form());
 		} else if (!formElement.number().format().isEmpty()) {
 			return process(formElement.number());
+		} else if (!formElement.hidden().value().isEmpty()) {
+			return process(formElement.hidden());
 		} else if (!formElement.email().pattern().isEmpty()) {
 			return process(formElement.email());
 		} else if ((!formElement.radio().dataProvider().path().isEmpty()) ^ formElement.radio().options().length > 0) {

@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
@@ -27,7 +28,7 @@ public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@FormElement
+	@FormElement(hidden = @Hidden(value = "0"))
 	Long id;
 
 	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
