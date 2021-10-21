@@ -1,6 +1,7 @@
 package io.jetform.core.service.impl;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ public class JetFormServiceImpl implements JetFormService {
 	@Override
 	public List getList(String className) {
 		Class<?> forName = null;
+
 		try {
 			forName = Class.forName(className);
 		} catch (ClassNotFoundException e) {
@@ -116,36 +118,24 @@ public class JetFormServiceImpl implements JetFormService {
 		Map<String, String> elementsMapWithValues = new HashMap<String, String>();
 
 		Field[] declaredFields = entity.getClass().getDeclaredFields();
-		
-		/*
-		 * Arrays.stream(declaredFields) .forEach(field->{
-		 * 
-		 * try {System.out.println(field.getClass()); Object object = field.get(entity);
-		 * elementsMapWithValues.put(field.getName(),String.valueOf(object)); } catch
-		 * (IllegalArgumentException |IllegalAccessException e1) { e1.printStackTrace();
-		 * } });
-		 */
-		
-		for (Field field : declaredFields) {
-			field.setAccessible(true);
-			
+
+		Arrays.stream(declaredFields).forEach(field -> {
+
 			try {
+				field.setAccessible(true);
+				System.out.println(field.getClass());
 				Object object = field.get(entity);
-				System.out.println("field name: " + field.getName());
-				System.out.println("field value: " + object);
-				elementsMapWithValues.put(field.getName(), object.toString());
-				
-			} 
-			catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
+				elementsMapWithValues.put(field.getName(), String.valueOf(object));
+			} catch (IllegalArgumentException | IllegalAccessException e1) {
+				e1.printStackTrace();
 			}
-		}
-		System.out.println("Elements Map: "+ elementsMapWithValues);
-		
-		elements.forEach(e->{
+		});
+
+		System.out.println("Elements Map: " + elementsMapWithValues);
+
+		elements.forEach(e -> {
 			e.setValue(elementsMapWithValues.get(e.getName()));
 		});
-//		System.out.println("elements after population values");
 	}
 
 }
