@@ -1,23 +1,21 @@
 package io.jetform.core.service.impl;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 
 import com.google.gson.Gson;
 
-import io.jetform.core.JetformApplication;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
@@ -111,6 +109,86 @@ public class JetFormServiceImpl implements JetFormService {
 		System.out.println("Elements after populating: " + elements);
 		formWrapper.setElements(elements);
 		return formWrapper;
+	}
+	
+	@Override
+	public Object saveEntity(MultiValueMap<String, String> formData) {
+		List<String> list = formData.get("className");
+		System.out.println(list.get(0));
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(list.get(0));
+			clazz = getClassField(formData, clazz);
+			// clazz.getDeclaredConstructor().newInstance();
+			// Object object = clazz.getDeclaredConstructor().newInstance();
+
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return clazz;
+	}
+
+	public Class<?> getClassField(MultiValueMap<String, String> formData, Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+
+		Object newInstance = clazz.getDeclaredConstructor().newInstance();
+		Field[] declaredFields = clazz.getDeclaredFields();
+		// List<String>
+		// for(Field field:declaredFields) {}
+
+		Set<String> keySet = formData.keySet();
+
+		for(String attribute:keySet) {
+			if(attribute.equalsIgnoreCase("classname"))
+				continue;
+			Field field;
+			try {
+				field = clazz.getDeclaredField(attribute);
+				field.setAccessible(true);
+				System.out.println("FIeld name"+ field.getName());
+				System.out.println(formData.get(attribute).get(0));
+				field.set(newInstance, (Object)formData.get(attribute).get(0));
+
+			} catch (NoSuchFieldException |SecurityException | IllegalArgumentException |IllegalAccessException  e) {
+				e.printStackTrace();
+			} 
+
+		}
+		
+		/*
+		 * keySet.stream().filter(e -> !e.equalsIgnoreCase("className")).forEach(attr ->
+		 * { Field f; try { f = clazz.getDeclaredField(attr);
+		 * 
+		 * f.setAccessible(true); f.set(clazz, formData.get(attr).get(0)); } catch
+		 * (NoSuchFieldException | SecurityException | IllegalArgumentException |
+		 * IllegalAccessException e) { // TODO // Auto-generated // catch // block
+		 * e.printStackTrace(); } });
+		 */
+
+		/*
+		 * Arrays.stream(clazz.getDeclaredFields()).forEach(e -> {
+		 * e.setAccessible(true); e.set(clazz, e); });
+		 */
+		return clazz;
 	}
 
 	private void populateElements(List<FormElementWrapper> elements, Object entity) {

@@ -75,6 +75,16 @@ public class Employee {
 	@FormElement(number=@Number(format = "####"))
 	int age;
 
+	
+	
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
 	public Long getId() {
 		return id;
 	}
