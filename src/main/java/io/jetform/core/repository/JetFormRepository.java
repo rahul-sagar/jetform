@@ -6,5 +6,5 @@ public interface JetFormRepository {
 
 	List getAll(Class<?> clazz);
 	Object getEntity(Long id,Class<?> clazz);
-	
+	Object save(Object object);
 }

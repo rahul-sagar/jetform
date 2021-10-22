@@ -13,5 +13,5 @@ public interface JetFormService {
     JetFormWrapper getFormWrapper(String className);
     JetFormWrapper getFormWrapperWithValues(Long id,String className);
     
-    public Object saveEntity(MultiValueMap<String, String> formData);
+    public Object saveEntity(MultiValueMap<String, Object> formData);
 }

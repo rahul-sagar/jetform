@@ -32,5 +32,12 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 		
 		return entity;
 	}
+
+	@Override
+	@Transactional
+	public Object save(Object object) {
+		Object saveEntity = entityManager.merge(object);
+		return saveEntity;
+	}
 	
 }
