@@ -295,4 +295,19 @@ public class JetFormServiceImpl implements JetFormService {
 		});
 	}
 
+	@Override
+	public boolean deleteEntity(Long id, String className) {
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(className);
+			repository.delete(id, clazz);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+
+	}
+
 }

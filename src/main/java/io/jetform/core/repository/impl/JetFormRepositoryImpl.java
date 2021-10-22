@@ -25,7 +25,8 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 		TypedQuery<?> query=entityManager.createQuery("select e from "+clazz.getName()+" e ",clazz);
 		return query.getResultList();
 	}
-
+	
+	@Transactional
 	public Object getEntity(Long id,Class<?> clazz) {
 		TypedQuery<?> query=entityManager.createQuery("select e from "+clazz.getName()+" e where id="+id, clazz);
 		Object entity = query.getSingleResult();
@@ -38,6 +39,13 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	public Object save(Object object) {
 		Object saveEntity = entityManager.merge(object);
 		return saveEntity;
+	}
+
+	@Override
+	@Transactional
+	public void delete(Long id,Class<?> clazz) {
+		Object entity = getEntity(id, clazz);
+		entityManager.remove(entity);
 	}
 	
 }
