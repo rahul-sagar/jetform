@@ -28,6 +28,7 @@ import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.engine.helper.FormRenderer;
 import io.jetform.core.repository.JetFormRepository;
 import io.jetform.core.service.JetFormService;
+import io.jetform.util.ReflectionUtils;
 
 @Component
 public class JetFormServiceImpl implements JetFormService {
@@ -123,11 +124,11 @@ public class JetFormServiceImpl implements JetFormService {
 		 List<Object> list = formData.get("className");
 		System.out.println("printing the className "+list.get(0));
 		Class<?> clazz = null;
-		Object classField = null;
+		Object entity = null;
 		try {
 			clazz = Class.forName(list.get(0).toString());
 			System.out.println(clazz.getName());
-			 classField = getClassField(formData, clazz);
+			entity = getClassField(formData, clazz);
 			// clazz.getDeclaredConstructor().newInstance();
 			// Object object = clazz.getDeclaredConstructor().newInstance();
 
@@ -163,7 +164,7 @@ public class JetFormServiceImpl implements JetFormService {
 			e.printStackTrace();
 		}
 
-		return classField;
+		return repository.save(entity);
 	}
 	
 	private <T> T castObject(Class<T> clazz, Object object) {
@@ -171,24 +172,21 @@ public class JetFormServiceImpl implements JetFormService {
 	}
 
 	public Object getClassField(MultiValueMap<String, Object> formData, Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IntrospectionException, JsonMappingException, JsonProcessingException {
-		/*Set<String> keySet = formData.keySet();
-		
-		 Object obj = clazz.getDeclaredConstructor().newInstance(); 
-		  Class<?extends Object> class1 = obj.getClass(); 
-		  
-		  for(String attribute:keySet) {
-			  if(attribute.equalsIgnoreCase("classname"))
-		          continue; 
-			  PropertyDescriptor pd = new PropertyDescriptor(attribute, obj.getClass());
-	            //Method getter = pd.getReadMethod();
-			  Method getter = pd.getWriteMethod();
-			  String string = formData.get(attribute).get(0);
-			  Object object=string;
-			  Object invoke = getter.invoke(obj, object);
-	           // Object f = getter.invoke(obj);
-		  }
-		  */
-		  Set<String> keySet = formData.keySet();
+		Set<String> keySet = formData.keySet();
+		/*
+		 * Set<String> keySet = formData.keySet();
+		 * 
+		 * Object obj = clazz.getDeclaredConstructor().newInstance(); Class<?extends
+		 * Object> class1 = obj.getClass();
+		 * 
+		 * for(String attribute:keySet) { if(attribute.equalsIgnoreCase("classname"))
+		 * continue; PropertyDescriptor pd = new PropertyDescriptor(attribute,
+		 * obj.getClass()); //Method getter = pd.getReadMethod(); Method getter =
+		 * pd.getWriteMethod(); String string = formData.get(attribute).get(0); Object
+		 * object=string; Object invoke = getter.invoke(obj, object); // Object f =
+		 * getter.invoke(obj); }
+		 */
+		  /*Set<String> keySet = formData.keySet();
 		  Object object = clazz.getDeclaredConstructor().newInstance();
 		  //Field field;
 		  formData.remove("className");
@@ -231,8 +229,8 @@ public class JetFormServiceImpl implements JetFormService {
 		  }*/
 		 
 		
-		
-	/*	  keySet.stream()
+		  Object newInstance = clazz.getDeclaredConstructor().newInstance();
+	  keySet.stream()
 		        .filter(e -> !e.equalsIgnoreCase("className"))
 		        .forEach(attr -> { 
 		        	  Field f; 
@@ -241,19 +239,19 @@ public class JetFormServiceImpl implements JetFormService {
 		        		   System.out.println(f.getName());
 		        		   System.out.println(formData.get(attr).get(0));
 		                   f.setAccessible(true); 
-		                   f.set(clazz, formData.get(attr).get(0)); 
+		                   f.set(newInstance, ReflectionUtils.parse(formData.get(attr).get(0).toString(), f.getType()));
+		                  // f.set(clazz, formData.get(attr).get(0)); 
 		                   } catch(NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) { 
 		                	   // TODO // Auto-generated // catch // block
 		                        e.printStackTrace(); 
 		                   } 
 		        	  });
 		 
-
 		/*
 		 * Arrays.stream(clazz.getDeclaredFields()).forEach(e -> {
 		 * e.setAccessible(true); e.set(clazz, e); });
 		 */
-		return save;
+		return newInstance;
 	}
 	
 	 public static Object invokeGetter(Object obj, String variableName)

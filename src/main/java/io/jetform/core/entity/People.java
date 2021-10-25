@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Validation;
@@ -17,15 +18,15 @@ import io.jetform.core.enums.ValidationType;
 
 @Entity
 @Table(name="people")
-@JetForm(actions = { @FormAction(name = "/create", action = Action.CREATE,type=Type.BUTTON, label = "Create"),
-		@FormAction(name = "/update", action = Action.UPDATE,type=Type.BUTTON, label = "Update"),
-		@FormAction(name = "/delete", action = Action.DELETE,type=Type.BUTTON, label = "Delete"),
-		@FormAction(name = "/list", action = Action.READ,type=Type.BUTTON, label = "Read") })
+@JetForm(actions = { @FormAction(name = "create", action = Action.CREATE,type=Type.SUBMIT, label = "Create"),
+		@FormAction(name = "update", action = Action.UPDATE,type=Type.BUTTON, label = "Update"),
+		@FormAction(name = "delete", action = Action.DELETE,type=Type.BUTTON, label = "Delete"),
+		@FormAction(name = "list", action = Action.READ,type=Type.BUTTON, label = "Read") })
 public class People {
 	
 	@Id()
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@FormElement()
+	@FormElement(hidden = @Hidden(value = "0"))
 	private long id;
 	
 	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
@@ -54,6 +55,14 @@ public class People {
 	}
 	public void setAge(int age) {
 		this.age = age;
+	}
+	
+	public long getId() {
+		return id;
+	}
+	
+	public void setId(long id) {
+		this.id = id;
 	}
 	@Override
 	public String toString() {
