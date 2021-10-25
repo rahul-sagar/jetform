@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -51,7 +50,7 @@ public class JetFormServiceImpl implements JetFormService {
 	}
 
 	@Override
-	public List getList(String className) {
+	public List<?> getList(String className) {
 		Class<?> forName = null;
 
 		try {
@@ -169,7 +168,7 @@ public class JetFormServiceImpl implements JetFormService {
 	
 	private <T> T castObject(Class<T> clazz, Object object) {
 		  return (T) object;
-		}
+	}
 
 	public Object getClassField(MultiValueMap<String, Object> formData, Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IntrospectionException, JsonMappingException, JsonProcessingException {
 		/*Set<String> keySet = formData.keySet();
@@ -191,7 +190,7 @@ public class JetFormServiceImpl implements JetFormService {
 		  */
 		  Set<String> keySet = formData.keySet();
 		  Object object = clazz.getDeclaredConstructor().newInstance();
-		  Field field;
+		  //Field field;
 		  formData.remove("className");
 		  ObjectMapper mapper = new ObjectMapper();
 		  String writeValueAsString = mapper.writeValueAsString(formData);
@@ -308,6 +307,13 @@ public class JetFormServiceImpl implements JetFormService {
 		}
 		return true;
 
+	}
+
+	@Override
+	public Object saveEntity(Object object) {
+		// TODO Auto-generated method stub
+		Object save = repository.save(object);
+		return save;
 	}
 
 }
