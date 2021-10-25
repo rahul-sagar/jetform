@@ -28,20 +28,20 @@ public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@FormElement(hidden = @Hidden(value = "0"))
+	@FormElement(hidden = @Hidden(value = "0"),listable=false)
 	Long id;
 
-	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
+	@FormElement(validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	String employeeName;
 	
 
 	// @FormField(listable = true,fieldType = FieldType.RADIO, radio =
 	// @Radio(dataProvider = @DataProvider(loadType = LoadType.LAZY, path =
 	// "/gender/list", resource = ResourceType.WEB,key = "id",value = "name")))
-	@FormElement(listable = true, radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
+	@FormElement(radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
 	String gender;
 
-	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }),listable=true)
+	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }))
 	String department;
 	/*
 	 * @FormField(listable = true ,fieldType = FieldType.NUMBER, number
@@ -51,10 +51,10 @@ public class Employee {
 	 * 
 	 * @Validation(type = ValidationType.MAX, value = "999999") })
 	 */
-	@FormElement(listable = true, number = @Number(format = "#####"))
+	@FormElement(number = @Number(format = "#####"))
 	int pinCode;
 	// @FormField()
-	@FormElement(listable=true,number=@Number(format="#####"))
+	@FormElement(number=@Number(format="#####"))
 	int salary;
 	/*
 	 * @FormField(fieldType = FieldType.CHECKBOX,checkbox = @Checkbox(selectionType
@@ -72,7 +72,7 @@ public class Employee {
 	// @JoinColumn(name = "contactId")
 	// @FormField(form = @Form(childKey = "contactId", parentKey = "empId"))
 //	private Contact contact;
-	@FormElement(number=@Number(format = "####"))
+	@FormElement(number=@Number(format = "####"),listable=false)
 	int age;
 
 	

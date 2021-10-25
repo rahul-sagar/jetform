@@ -45,6 +45,7 @@ public class FormRendererImpl implements FormRenderer{
 	     populate(jetFormWrapper, clazz.getSimpleName(), jetForm);
 		List<FormElementWrapper> readFormElements = getFormElements(clazz);
 		jetFormWrapper.setElements(readFormElements);
+		System.out.println("wrapper"+jetFormWrapper);
 		return jetFormWrapper;
 	}
 
@@ -83,6 +84,16 @@ public class FormRendererImpl implements FormRenderer{
 		if (jetForm.title().equals("")) {
 			jetFormWrapper.setTitle(JetFormUtils.createLabel(className));
 		}
+		if(jetForm.listIndex()==jetForm.selectable()) {
+			jetFormWrapper.setSelectable(true);
+			jetFormWrapper.setListIndex(false);
+		}
+		else if(jetForm.listIndex()!=jetForm.selectable()) {
+			jetFormWrapper.setListIndex(jetForm.listIndex());
+			jetFormWrapper.setSelectable(jetForm.selectable());		
+		}
+
+		System.out.println("form wrapper"+jetFormWrapper);
          //return jetFormWrapper;
 	}
 

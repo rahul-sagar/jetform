@@ -46,6 +46,7 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	public void delete(Long id,Class<?> clazz) {
 		Object entity = getEntity(id, clazz);
 		entityManager.remove(entity);
+//		entityManager.remo
 	}
 	
 }
