@@ -8,4 +8,5 @@ public interface JetFormRepository {
 	Object getEntity(Long id,Class<?> clazz);
 	Object save(Object object);
 	void delete(Long id,Class<?> clazz);
+	boolean deleteMultiple(Long[]id,Class<?> clazz);
 }

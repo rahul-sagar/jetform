@@ -15,4 +15,5 @@ public interface JetFormService {
     public Object saveEntity(MultiValueMap<String, Object> formData);
     public Object saveEntity(Object object);
     public boolean deleteEntity(Long id,String className);
+    public boolean deleteMultiple(Long []deletedIDs,String className) throws ClassNotFoundException;
 }

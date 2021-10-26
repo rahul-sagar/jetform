@@ -74,7 +74,7 @@ public class FormRendererImpl implements FormRenderer{
 
 
 	private void populate(JetFormWrapper jetFormWrapper, String className, JetForm jetForm) {
-
+        
 		if (jetForm.id().equals("")) {
 			jetFormWrapper.setId(className.toLowerCase()+"_12345");
 		}
@@ -85,8 +85,14 @@ public class FormRendererImpl implements FormRenderer{
 			jetFormWrapper.setTitle(JetFormUtils.createLabel(className));
 		}
 		if(jetForm.listIndex()==jetForm.selectable()) {
-			jetFormWrapper.setSelectable(true);
-			jetFormWrapper.setListIndex(false);
+			if(jetForm.listIndex()==false) {
+				jetFormWrapper.setSelectable(false);
+				jetFormWrapper.setListIndex(false);
+			}
+			else {
+				jetFormWrapper.setSelectable(true);
+				jetFormWrapper.setListIndex(false);				
+			}
 		}
 		else if(jetForm.listIndex()!=jetForm.selectable()) {
 			jetFormWrapper.setListIndex(jetForm.listIndex());
@@ -94,12 +100,10 @@ public class FormRendererImpl implements FormRenderer{
 		}
 
 		System.out.println("form wrapper"+jetFormWrapper);
-         //return jetFormWrapper;
+        //return jetFormWrapper;
 	}
 
 }
-
-
 /*
  * private static FormElementWrapper populate(FormElementWrapper formFieldBase,
  * Field field, FormElement formField) { if (formField.id().equals("")) {

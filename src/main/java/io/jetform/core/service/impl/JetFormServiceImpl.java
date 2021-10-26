@@ -314,4 +314,16 @@ public class JetFormServiceImpl implements JetFormService {
 		return save;
 	}
 
+	@Override
+	public boolean deleteMultiple(Long [] deletedIDs, String className) throws ClassNotFoundException {
+		
+		Class<?> clazz = Class.forName(className);
+		Arrays.stream(deletedIDs)
+			.forEach(a->{
+				repository.delete(a, clazz);
+			});
+	
+		return false;
+	}
+
 }

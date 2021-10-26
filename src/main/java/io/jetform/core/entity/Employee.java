@@ -20,7 +20,7 @@ import io.jetform.core.enums.ValidationType;
 
 @Entity
 @Table(name = "tbl_employee")
-@JetForm(actions = { @FormAction(name = "create", action = Action.CREATE,type=Type.SUBMIT, label = "Create"),
+@JetForm(listIndex=false,actions = { @FormAction(name = "create", action = Action.CREATE,type=Type.SUBMIT, label = "Create"),
 		@FormAction(name = "/update", action = Action.UPDATE,type=Type.BUTTON, label = "Update"),
 		@FormAction(name = "/delete", action = Action.DELETE,type=Type.BUTTON, label = "Delete"),
 		@FormAction(name = "/list", action = Action.READ,type=Type.BUTTON, label = "Read") })

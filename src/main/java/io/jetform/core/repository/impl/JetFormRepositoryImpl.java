@@ -49,4 +49,9 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 //		entityManager.remo
 	}
 	
+	public boolean deleteMultiple(Long[]id,Class<?> clazz) {
+		entityManager.createQuery("delete from "+clazz.getName()+" where IN "+"(8,9,11)",clazz);
+		return true;
+	}
+	
 }
