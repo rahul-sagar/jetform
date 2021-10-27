@@ -26,22 +26,25 @@ import io.jetform.core.enums.ValidationType;
 		@FormAction(name = "/list", action = Action.READ,type=Type.BUTTON, label = "Read") })
 public class Employee {
 
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@FormElement(hidden = @Hidden(value = "0"),listable=false)
+	@FormElement(hidden = @Hidden(value = "0"))
 	Long id;
-
-	@FormElement(validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
+//@Validation(type = ValidationType.REQUIRED, value = "true"),
+	@FormElement(listable = true, validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
 	String employeeName;
 	
 
 	// @FormField(listable = true,fieldType = FieldType.RADIO, radio =
 	// @Radio(dataProvider = @DataProvider(loadType = LoadType.LAZY, path =
 	// "/gender/list", resource = ResourceType.WEB,key = "id",value = "name")))
-	@FormElement(radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }))
+	@FormElement(listable = true, radio = @Radio(options = { "M:Male", "F:Female", "T:TransGender" }),
+			validations = @Validation(type = ValidationType.REQUIRED,value = "true"))
 	String gender;
 
-	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }))
+	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }),listable=true,
+			validations = @Validation(type = ValidationType.REQUIRED,value = "true"))
 	String department;
 	/*
 	 * @FormField(listable = true ,fieldType = FieldType.NUMBER, number
@@ -51,10 +54,15 @@ public class Employee {
 	 * 
 	 * @Validation(type = ValidationType.MAX, value = "999999") })
 	 */
-	@FormElement(number = @Number(format = "#####"))
+	@FormElement(listable = true, number = @Number(format = "#####"),
+			validations = {@Validation(type = ValidationType.REQUIRED,value = "true"),
+					       @Validation(type = ValidationType.MINLENGTH,value = "6")})
 	int pinCode;
 	// @FormField()
-	@FormElement(number=@Number(format="#####"))
+	@FormElement(listable=true,number=@Number(format="#####"),
+			validations = {@Validation(type = ValidationType.REQUIRED,value = "true"),
+					       @Validation(type = ValidationType.MIN,value = "10000"),
+					       @Validation(type = ValidationType.MAX,value = "100000")})
 	int salary;
 	/*
 	 * @FormField(fieldType = FieldType.CHECKBOX,checkbox = @Checkbox(selectionType
@@ -72,7 +80,10 @@ public class Employee {
 	// @JoinColumn(name = "contactId")
 	// @FormField(form = @Form(childKey = "contactId", parentKey = "empId"))
 //	private Contact contact;
-	@FormElement(number=@Number(format = "####"),listable=false)
+	@FormElement(number=@Number(format = "####"),
+			validations = {@Validation(type = ValidationType.REQUIRED,value = "true"),
+				           @Validation(type = ValidationType.MIN,value = "18"),
+				           @Validation(type = ValidationType.MAX,value = "90")})
 	int age;
 
 	
@@ -138,5 +149,6 @@ public class Employee {
 		return "Employee [department=" + department + ", id=" + id + ", employeeName=" + employeeName + ", gender="
 				+ gender + ", pinCode=" + pinCode + ", salary=" + salary + ", age=" + age + "]";
 	}
+
 
 }
