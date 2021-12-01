@@ -2,6 +2,8 @@ package io.jetform.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class ReflectionUtils {
@@ -25,9 +27,17 @@ public class ReflectionUtils {
 			} else if (type == boolean.class || type == Boolean.class) {
 				result = Boolean.parseBoolean(value);
 			} else if (type == Date.class) {
+				System.out.println("inside date : ");
 				result = SOURCE_DATE_FORMAT.parse(value);
+			} else if (type == LocalDate.class) {
+				System.out.println("printing the Local date");
+				//result = SOURCE_LOCAL_DATE_FORMAT.parse(value);
+				result = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE.ofPattern("yyyy-MM-dd"));
+				//DateTimeFormatter ofPattern = DateTimeFormatter.ISO_LOCAL_DATE.ofPattern("yyyy-MM-dd");
+				//DateTimeFormatter.ISO_LOCAL_DATE.
+				System.out.println(result);
 			} else if (type == String.class) {
-				result = value;
+				result = value;//
 			}
 		} catch (Exception e) {
 //			LOGGER.info(e.getMessage());
@@ -51,4 +61,7 @@ public class ReflectionUtils {
 	}
 	
 	final static DateFormat SOURCE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	//final static DateFormat SOURCE_LOCAL_DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD");
+	//final static DateTimeFormatter SOURCE_LOCAL_DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE.ofPattern("yyyy-MM-dd");
+	//DateTimeFormatter.ISO_LOCAL_DATE.format(localDate)
 }

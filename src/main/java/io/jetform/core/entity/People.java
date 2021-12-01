@@ -1,11 +1,14 @@
 package io.jetform.core.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Hidden;
@@ -38,6 +41,15 @@ public class People {
 	@FormElement(listable = true, number = @Number(format = "#####"))
 	private int age;
 	
+	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"))
+	private LocalDate dateOfBirth;
+	
+	public LocalDate getDateOfBirth() {
+		return dateOfBirth;
+	}
+	public void setDateOfBirth(LocalDate dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -66,7 +78,8 @@ public class People {
 	}
 	@Override
 	public String toString() {
-		return "People [firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + "]";
+		return "People [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", age=" + age
+				+ ", dateOfBirth=" + dateOfBirth + "]";
 	}
 	
 }

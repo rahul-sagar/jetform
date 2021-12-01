@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Hidden;
@@ -86,8 +87,18 @@ public class Employee {
 				           @Validation(type = ValidationType.MAX,value = "90")})
 	int age;
 
+	//@FormElement(date = @Date(format = "dd/mm/yyyy"))
+	private String dateOfBirth;
 	
 	
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
 	public String getDepartment() {
 		return department;
 	}

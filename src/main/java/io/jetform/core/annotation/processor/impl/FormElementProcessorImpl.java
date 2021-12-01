@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import org.springframework.stereotype.Component;
 
 import io.jetform.core.annotation.Checkbox;
+import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormElement;
@@ -14,6 +15,7 @@ import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.Text;
 import io.jetform.core.annotation.model.CheckBoxWrapper;
+import io.jetform.core.annotation.model.DateWrapper;
 import io.jetform.core.annotation.model.EmailWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.FormWrapper;
@@ -71,11 +73,15 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 	}
 
 	private CheckBoxWrapper process(Checkbox checkbox) {
-		return new CheckBoxWrapper();
+		return new CheckBoxWrapper(checkbox);
 	}
 
 	private RadioWrapper process(Radio radio) {
 		return new RadioWrapper(radio);
+	}
+	
+	private DateWrapper process(Date date) {
+		return new DateWrapper(date);
 	}
 
 	@Override
@@ -88,6 +94,8 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 			return process(formElement.form());
 		} else if (!formElement.number().format().isEmpty()) {
 			return process(formElement.number());
+		}else if (!formElement.date().format().isEmpty()) {
+			return process(formElement.date());
 		} else if (!formElement.hidden().value().isEmpty()) {
 			return process(formElement.hidden());
 		} else if (!formElement.email().pattern().isEmpty()) {
