@@ -14,6 +14,7 @@ import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.Text;
+import io.jetform.core.annotation.Upload;
 import io.jetform.core.annotation.model.CheckBoxWrapper;
 import io.jetform.core.annotation.model.DateWrapper;
 import io.jetform.core.annotation.model.EmailWrapper;
@@ -24,6 +25,7 @@ import io.jetform.core.annotation.model.NumberWrapper;
 import io.jetform.core.annotation.model.RadioWrapper;
 import io.jetform.core.annotation.model.SelectWrapper;
 import io.jetform.core.annotation.model.TextWrapper;
+import io.jetform.core.annotation.model.UploadWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
 import io.jetform.core.helperclasses.JetFormUtils;
 
@@ -83,34 +85,50 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 	private DateWrapper process(Date date) {
 		return new DateWrapper(date);
 	}
+	
+	private UploadWrapper process(Upload upload) {		
+		return new UploadWrapper(upload);
+	}
 
 	@Override
 	public Object processFieldElement(Object annotation) {
+
 		FormElement formElement = null;
-		if (annotation instanceof FormElement) {
+
+		if (annotation instanceof FormElement) 
 			formElement = (FormElement) annotation;
-		}
-		if (!(formElement.form().childKey().isEmpty() || formElement.form().parentKey().isEmpty())) {
+		
+		if (!(formElement.form().childKey().isEmpty() || formElement.form().parentKey().isEmpty())) 
 			return process(formElement.form());
-		} else if (!formElement.number().format().isEmpty()) {
+		
+		else if (!formElement.number().format().isEmpty()) 
 			return process(formElement.number());
-		}else if (!formElement.date().format().isEmpty()) {
+
+		else if (!formElement.date().format().isEmpty()) 
 			return process(formElement.date());
-		} else if (!formElement.hidden().value().isEmpty()) {
+		
+		else if (!formElement.hidden().value().isEmpty()) 
 			return process(formElement.hidden());
-		} else if (!formElement.email().pattern().isEmpty()) {
+
+		else if (!formElement.email().pattern().isEmpty()) 
 			return process(formElement.email());
-		} else if ((!formElement.radio().dataProvider().path().isEmpty()) ^ formElement.radio().options().length > 0) {
+		
+		else if ((!formElement.radio().dataProvider().path().isEmpty()) ^ formElement.radio().options().length > 0) 
 			return process(formElement.radio());
-		} else if ((!formElement.checkbox().dataProvider().path().isEmpty())
-				^ formElement.checkbox().options().length > 0) {
+		
+		else if ((!formElement.checkbox().dataProvider().path().isEmpty()) ^ formElement.checkbox().options().length > 0) 
 			return process(formElement.checkbox());
-		} else if ((!formElement.select().dataProvider().path().isEmpty())
-				^ formElement.select().options().length > 0) {
+		
+		else if ((!formElement.select().dataProvider().path().isEmpty())
+				^ formElement.select().options().length > 0)
 			return process(formElement.select());
-		} else {
+		 
+		else if (!(formElement.upload().dataProvider().path().isEmpty())) 
+			return process(formElement.upload());
+		
+		else 
 			return process(formElement.text());
-		}
+		
 	}
 
 	private FormElementWrapper populate(FormElementWrapper formElementWrapper, FormElement formElement, Field field) {

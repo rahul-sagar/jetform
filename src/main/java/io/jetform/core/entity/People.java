@@ -44,6 +44,17 @@ public class People {
 	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"))
 	private LocalDate dateOfBirth;
 	
+	@FormElement( listable=true,date=@Date(format="yy-mm-dd"))
+	private LocalDate dateOfJoining;
+	
+	public LocalDate getDateOfJoining() {
+		return dateOfJoining;
+	}
+	
+	public void setDateOfJoining(LocalDate dateOfJoining) {
+		this.dateOfJoining = dateOfJoining;
+	}
+	
 	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}

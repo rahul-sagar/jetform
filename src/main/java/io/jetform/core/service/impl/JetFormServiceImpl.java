@@ -163,7 +163,7 @@ public class JetFormServiceImpl implements JetFormService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	
 		return repository.save(entity);
 	}
 	
@@ -173,6 +173,7 @@ public class JetFormServiceImpl implements JetFormService {
 
 	public Object getClassField(MultiValueMap<String, Object> formData, Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IntrospectionException, JsonMappingException, JsonProcessingException {
 		Set<String> keySet = formData.keySet();
+		
 		/*
 		 * Set<String> keySet = formData.keySet();
 		 * 
