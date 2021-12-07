@@ -27,7 +27,7 @@ public class FormRendererImpl implements FormRenderer{
 		JetFormWrapper jetFormWrapper = null;
 		try {
 			Class<?> forName = Class.forName(formClass);
-			 jetFormWrapper = getForm(forName);
+			jetFormWrapper = getForm(forName);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -71,7 +71,6 @@ public class FormRendererImpl implements FormRenderer{
 		      .collect(Collectors.toList()); 
 	}
 	
-
 
 	private void populate(JetFormWrapper jetFormWrapper, String className, JetForm jetForm) {
         

@@ -1,5 +1,6 @@
 package io.jetform.core.entity;
 
+import java.io.File;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
@@ -8,15 +9,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.DataProvider;
 import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
+import io.jetform.core.annotation.Upload;
 import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
+import io.jetform.core.enums.LoadType;
+import io.jetform.core.enums.ResourceType;
 import io.jetform.core.enums.Type;
+import io.jetform.core.enums.UploadType;
 import io.jetform.core.enums.ValidationType;
 
 @Entity
@@ -44,6 +50,29 @@ public class People {
 	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"),validations = { @Validation(type = ValidationType.REQUIRED, value = "true"),
 			@Validation(type = ValidationType.MINDATE, value = "21-12-05")})
 	private LocalDate dateOfBirth;
+	
+	@FormElement( listable=true,date=@Date(format="yy-mm-dd"))
+	private LocalDate dateOfJoining;
+	
+	@FormElement(listable=false,upload=@Upload(type=UploadType.IMAGE,dataProvider=@DataProvider(path="F:\\images",loadType=LoadType.LAZY,resource=ResourceType.FILE)))
+	private String resume;
+	
+	
+	public String getResume() {
+		return resume;
+	}
+
+	public void setResume(String resume) {
+		this.resume = resume;
+	}
+
+	public LocalDate getDateOfJoining() {
+		return dateOfJoining;
+	}
+	
+	public void setDateOfJoining(LocalDate dateOfJoining) {
+		this.dateOfJoining = dateOfJoining;
+	}
 	
 	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
@@ -77,10 +106,11 @@ public class People {
 	public void setId(long id) {
 		this.id = id;
 	}
+
 	@Override
 	public String toString() {
 		return "People [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", age=" + age
-				+ ", dateOfBirth=" + dateOfBirth + "]";
-	}
+				+ ", dateOfBirth=" + dateOfBirth + ", dateOfJoining=" + dateOfJoining + ", resume=" + resume + "]";
+	}		
 	
 }
