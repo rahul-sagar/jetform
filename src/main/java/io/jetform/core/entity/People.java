@@ -32,7 +32,7 @@ public class People {
 	@FormElement(hidden = @Hidden(value = "0"))
 	private long id;
 	
-	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
+	@FormElement(listable = true,autocomplete = true ,validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	private String firstName;
 	
 	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
@@ -41,7 +41,8 @@ public class People {
 	@FormElement(listable = true, number = @Number(format = "#####"))
 	private int age;
 	
-	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"))
+	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"),validations = { @Validation(type = ValidationType.REQUIRED, value = "true"),
+			@Validation(type = ValidationType.MINDATE, value = "21-12-05")})
 	private LocalDate dateOfBirth;
 	
 	public LocalDate getDateOfBirth() {

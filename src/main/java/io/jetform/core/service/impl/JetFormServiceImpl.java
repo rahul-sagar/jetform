@@ -5,6 +5,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -324,6 +325,39 @@ public class JetFormServiceImpl implements JetFormService {
 			});
 	
 		return false;
+	}
+
+	@Override
+	public List<String> getAutoCompleteSourceData(String className, String fieldName) {
+		List<?> list = getList(className);
+		List<String> autoCompleteSourceData = new ArrayList<>();
+		for(Object object : list) {
+			Class<? extends Object> class1 = object.getClass();
+			System.out.println("printing the class "+class1.getName());
+			try {
+				Field declaredField = class1.getDeclaredField(fieldName);
+				       declaredField.setAccessible(true);
+				       Object object2 = declaredField.get(object);
+				//Field field = class1.getField(fieldName);
+				//field.setAccessible(true);
+				//Object fieldValue = field.get(object);
+				autoCompleteSourceData.add(object2.toString());
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+			
+		return autoCompleteSourceData;
 	}
 
 }

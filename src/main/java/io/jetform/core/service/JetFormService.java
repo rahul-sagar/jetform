@@ -16,4 +16,5 @@ public interface JetFormService {
     public Object saveEntity(Object object);
     public boolean deleteEntity(Long id,String className);
     public boolean deleteMultiple(Long []deletedIDs,String className) throws ClassNotFoundException;
+    public List<String> getAutoCompleteSourceData(String className,String fieldName);
 }

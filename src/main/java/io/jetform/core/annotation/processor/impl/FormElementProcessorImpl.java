@@ -137,6 +137,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		formElementWrapper.setListable(formElement.listable());
 		formElementWrapper.setReadOnly(formElement.readOnly());
 		formElementWrapper.setValidations(JetFormUtils.getValidations(formElement));
+		formElementWrapper.setAutoComplete(formElement.autocomplete());
 		return formElementWrapper;
 	}
 }
