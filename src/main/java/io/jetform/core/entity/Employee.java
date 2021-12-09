@@ -27,13 +27,12 @@ import io.jetform.core.enums.ValidationType;
 		@FormAction(name = "/list", action = Action.READ,type=Type.BUTTON, label = "Read") })
 public class Employee {
 
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@FormElement(hidden = @Hidden(value = "0"))
 	Long id;
 //@Validation(type = ValidationType.REQUIRED, value = "true"),
-	@FormElement(listable = true, validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
+	@FormElement(listable = true, autocomplete=true,validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
 	String employeeName;
 	
 
@@ -44,7 +43,7 @@ public class Employee {
 			validations = @Validation(type = ValidationType.REQUIRED,value = "true"))
 	String gender;
 
-	@FormElement(select = @Select(multiSelect = true, options = { "F:Finance", "M:Marketing" }),listable=true,
+	@FormElement(select = @Select(multiSelect = false, options = { "F:Finance", "M:Marketing" }),listable=true,
 			validations = @Validation(type = ValidationType.REQUIRED,value = "true"))
 	String department;
 	/*

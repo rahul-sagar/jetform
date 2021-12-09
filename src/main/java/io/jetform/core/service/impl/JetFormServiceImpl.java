@@ -2,9 +2,14 @@ package io.jetform.core.service.impl;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,35 +19,95 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.engine.helper.FormRenderer;
+import io.jetform.core.entity.DocumentMedia;
+import io.jetform.core.repository.DocumentMediaRepo;
 import io.jetform.core.repository.JetFormRepository;
 import io.jetform.core.service.JetFormService;
+import io.jetform.core.service.exception.StorageException;
 import io.jetform.util.ReflectionUtils;
 
 @Component
 public class JetFormServiceImpl implements JetFormService {
+	
+	/*
+	 * @Value("${upload.path}") private String path;
+	 */
 
 	@Autowired
 	private FormRenderer formRenderer;
 
 	@Autowired
 	private JetFormRepository repository;
+	
+	@Autowired
+	DocumentMediaRepo documentrepo;
 
 	@Autowired
 	ApplicationContext applicationContext;
+	
+	@Override
+	public DocumentMedia saveDocument(MultipartFile file,String path) {
+		
+		if (file.isEmpty()) {
 
+           throw new StorageException("Failed to store empty file");
+        }
+
+        try {
+            String fileName = file.getOriginalFilename();
+           InputStream is = file.getInputStream();
+            String tempPath = path + fileName;
+            Files.copy(is, Paths.get(tempPath),StandardCopyOption.REPLACE_EXISTING);
+            DocumentMedia documentMedia = new DocumentMedia();
+       	 documentMedia.setName(file.getOriginalFilename());
+       	 documentMedia.setSize(file.getSize());
+       	 documentMedia.setContentType(file.getContentType()); 
+       	 documentMedia.setFilePath(tempPath);
+       	 documentMedia = documentrepo.save(documentMedia);
+            return documentMedia;
+        } catch (IOException e) {
+
+            String msg = String.format("Failed to store file %f", file.getName());
+
+            throw new StorageException(msg, e);
+        }
+		
+	}
+
+	/*
+	 * @Override public DocumentMedia saveDocument(MultipartFile multipartFile) {
+	 * 
+	 * 
+	 * 
+	 * System.out.println(multipartFile.getName());
+	 * System.out.println(multipartFile.getOriginalFilename());
+	 * System.out.println(multipartFile.getSize());
+	 * System.out.println(multipartFile.getContentType());
+	 * 
+	 * DocumentMedia documentMedia=new DocumentMedia();
+	 * documentMedia.setName(multipartFile.getOriginalFilename());
+	 * documentMedia.setSize(multipartFile.getSize());
+	 * documentMedia.setContentType(multipartFile.getContentType()); return
+	 * documentrepo.save(documentMedia);
+	 * 
+	 * }
+	 */
+	
+	
 	@Override
 	public String getFormJson(String className) {
 		Gson gson = new Gson();
@@ -357,7 +422,7 @@ public class JetFormServiceImpl implements JetFormService {
 				e.printStackTrace();
 			}
 		}
-			
+			System.out.println(" inside service "+autoCompleteSourceData);
 		return autoCompleteSourceData;
 	}
 

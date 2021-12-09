@@ -41,20 +41,20 @@ public class People {
 	@FormElement(listable = true,autocomplete = true ,validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	private String firstName;
 	
-	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
+	@FormElement(listable = true, autocomplete=true,validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	private String lastName;
 	
 	@FormElement(listable = true, number = @Number(format = "#####"))
 	private int age;
 	
-	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"),validations = { @Validation(type = ValidationType.REQUIRED, value = "true"),
-			@Validation(type = ValidationType.MINDATE, value = "21-12-05")})
+	@FormElement(listable = true, date = @Date(format = "yy-mm-dd"),validations = { @Validation(type = ValidationType.REQUIRED, value = "true")})
+//			@Validation(type = ValidationType.MINDATE, value = "21-12-05")
 	private LocalDate dateOfBirth;
 	
 	@FormElement( listable=true,date=@Date(format="yy-mm-dd"))
 	private LocalDate dateOfJoining;
 	
-	@FormElement(listable=false,upload=@Upload(type=UploadType.IMAGE,dataProvider=@DataProvider(path="F:\\images",loadType=LoadType.LAZY,resource=ResourceType.FILE)))
+	@FormElement(listable=false,upload=@Upload(type=UploadType.PDF,dataProvider=@DataProvider(path="F://jetform-engine//temp//",loadType=LoadType.LAZY,resource=ResourceType.FILE)))
 	private String resume;
 	
 	
