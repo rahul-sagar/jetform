@@ -14,6 +14,7 @@ import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Radio;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.Text;
+import io.jetform.core.annotation.TextArea;
 import io.jetform.core.annotation.Upload;
 import io.jetform.core.annotation.model.CheckBoxWrapper;
 import io.jetform.core.annotation.model.DateWrapper;
@@ -24,6 +25,7 @@ import io.jetform.core.annotation.model.HiddenWrapper;
 import io.jetform.core.annotation.model.NumberWrapper;
 import io.jetform.core.annotation.model.RadioWrapper;
 import io.jetform.core.annotation.model.SelectWrapper;
+import io.jetform.core.annotation.model.TextAreaWrapper;
 import io.jetform.core.annotation.model.TextWrapper;
 import io.jetform.core.annotation.model.UploadWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
@@ -54,6 +56,10 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 
 	private NumberWrapper process(Number number) {
 		return new NumberWrapper(number);
+	}
+	
+	private TextAreaWrapper process(TextArea textArea) {
+		return new TextAreaWrapper(textArea);
 	}
 
 
@@ -103,6 +109,9 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		
 		else if (!formElement.number().format().isEmpty()) 
 			return process(formElement.number());
+		
+		else if (!(formElement.textarea().rows()== 5 && formElement.textarea().cols()==50)) 
+			return process(formElement.textarea());
 
 		else if (!formElement.date().format().isEmpty()) 
 			return process(formElement.date());
