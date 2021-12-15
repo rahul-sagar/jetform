@@ -110,4 +110,12 @@ public class Contact {
 	public void setPersonalEmail(String personalEmail) {
 		this.personalEmail = personalEmail;
 	}
+	@Override
+	public String toString() {
+		return "Contact [id=" + id + ", altEmailAddress=" + altEmailAddress + ", emergencyMobile=" + emergencyMobile
+				+ ", linkedInId=" + linkedInId + ", mobile=" + mobile + ", personalEmail=" + personalEmail
+				+ ", deleted=" + deleted + ", status=" + status + "]";
+	}
+	
+	
 }

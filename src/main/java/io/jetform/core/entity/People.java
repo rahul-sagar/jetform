@@ -16,6 +16,7 @@ import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
+import io.jetform.core.annotation.TextArea;
 import io.jetform.core.annotation.Upload;
 import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
@@ -41,7 +42,7 @@ public class People {
 	@FormElement(listable = true,autocomplete = true ,validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	private String firstName;
 	
-	@FormElement(listable = true, autocomplete=true,validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
+	@FormElement(listable = true,textarea = @TextArea(cols = 100,rows=3) ,autocomplete=true,validations = { @Validation(type = ValidationType.REQUIRED, value = "true") })
 	private String lastName;
 	
 	@FormElement(listable = true, number = @Number(format = "#####"))

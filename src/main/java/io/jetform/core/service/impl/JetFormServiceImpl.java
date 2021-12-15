@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.activation.FileDataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.gson.Gson;
 
+import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
@@ -42,7 +45,7 @@ import io.jetform.util.ReflectionUtils;
 
 @Component
 public class JetFormServiceImpl implements JetFormService {
-	
+
 	/*
 	 * @Value("${upload.path}") private String path;
 	 */
@@ -52,40 +55,40 @@ public class JetFormServiceImpl implements JetFormService {
 
 	@Autowired
 	private JetFormRepository repository;
-	
+
 	@Autowired
 	DocumentMediaRepo documentrepo;
 
 	@Autowired
 	ApplicationContext applicationContext;
-	
+
 	@Override
-	public DocumentMedia saveDocument(MultipartFile file,String path) {
-		
+	public DocumentMedia saveDocument(MultipartFile file, String path) {
+
 		if (file.isEmpty()) {
 
-           throw new StorageException("Failed to store empty file");
-        }
+			throw new StorageException("Failed to store empty file");
+		}
 
-        try {
-            String fileName = file.getOriginalFilename();
-           InputStream is = file.getInputStream();
-            String tempPath = path + fileName;
-            Files.copy(is, Paths.get(tempPath),StandardCopyOption.REPLACE_EXISTING);
-            DocumentMedia documentMedia = new DocumentMedia();
-       	 documentMedia.setName(file.getOriginalFilename());
-       	 documentMedia.setSize(file.getSize());
-       	 documentMedia.setContentType(file.getContentType()); 
-       	 documentMedia.setFilePath(tempPath);
-       	 documentMedia = documentrepo.save(documentMedia);
-            return documentMedia;
-        } catch (IOException e) {
+		try {
+			String fileName = file.getOriginalFilename();
+			InputStream is = file.getInputStream();
+			String tempPath = path + fileName;
+			Files.copy(is, Paths.get(tempPath), StandardCopyOption.REPLACE_EXISTING);
+			DocumentMedia documentMedia = new DocumentMedia();
+			documentMedia.setName(file.getOriginalFilename());
+			documentMedia.setSize(file.getSize());
+			documentMedia.setContentType(file.getContentType());
+			documentMedia.setFilePath(tempPath);
+			documentMedia = documentrepo.save(documentMedia);
+			return documentMedia;
+		} catch (IOException e) {
 
-            String msg = String.format("Failed to store file %f", file.getName());
+			String msg = String.format("Failed to store file %f", file.getName());
 
-            throw new StorageException(msg, e);
-        }
-		
+			throw new StorageException(msg, e);
+		}
+
 	}
 
 	/*
@@ -106,8 +109,7 @@ public class JetFormServiceImpl implements JetFormService {
 	 * 
 	 * }
 	 */
-	
-	
+
 	@Override
 	public String getFormJson(String className) {
 		Gson gson = new Gson();
@@ -186,15 +188,16 @@ public class JetFormServiceImpl implements JetFormService {
 
 	@Override
 	public Object saveEntity(MultiValueMap<String, Object> formData) {
-		//List<String> list = formData.get("className");
-		 List<Object> list = formData.get("className");
-		System.out.println("printing the className "+list.get(0));
+		// List<String> list = formData.get("className");
+		List<Object> list = formData.get("className");
+		System.out.println("printing the className " + list.get(0));
 		Class<?> clazz = null;
 		Object entity = null;
 		try {
 			clazz = Class.forName(list.get(0).toString());
 			System.out.println(clazz.getName());
-			entity = getClassField(formData, clazz);
+			//entity = getClassField(formData, clazz);
+			entity = getClassFieldV2(formData, clazz);
 			// clazz.getDeclaredConstructor().newInstance();
 			// Object object = clazz.getDeclaredConstructor().newInstance();
 
@@ -207,39 +210,88 @@ public class JetFormServiceImpl implements JetFormService {
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IntrospectionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonProcessingException e) {
+		}
+        //return entity;
+		return repository.save(entity);
+	}
+
+	private <T> T castObject(Class<T> clazz, Object object) {
+		return (T) object;
+	}
+
+	private Object getClassFieldV2(MultiValueMap<String, Object> formData, Class<?> clazz) {
+		Object saveObject = null;
+		try {
+			Object newInstance = clazz.getDeclaredConstructor().newInstance();
+			
+			Arrays.stream(clazz.getDeclaredFields()).forEach(f -> poplateObject(formData, newInstance, f));
+			saveObject = newInstance;
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		return repository.save(entity);
-	}
-	
-	private <T> T castObject(Class<T> clazz, Object object) {
-		  return (T) object;
+
+		return saveObject;
 	}
 
-	public Object getClassField(MultiValueMap<String, Object> formData, Class<?> clazz) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IntrospectionException, JsonMappingException, JsonProcessingException {
+	private void poplateObject(MultiValueMap<String, Object> formData, Object newInstance, Field f) {
+		 f.setAccessible(true);
+		if (f.isAnnotationPresent(FormElement.class)
+				&& !f.getAnnotation(FormElement.class).form().formClass().isBlank()) {
+			String formClass = f.getAnnotation(FormElement.class).form().formClass();
+                    Class<?> clazz = getClazz(formClass);  
+                   
+                    Object classFieldV2 = getClassFieldV2(formData, clazz);
+                    try {
+						f.set(newInstance, classFieldV2);
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                    //getClassFieldV2(formData, clazz);
+		} else {
+			try {
+				if(formData.keySet().contains(f.getName())) {
+					System.out.println("printing the f.getName() :: "+f.getName());
+					f.set(newInstance, ReflectionUtils.parse(formData.get(f.getName()).get(0).toString(), f.getType()));
+					formData.remove(f.getName());
+				}else {
+					
+					String name = f.getDeclaringClass().getSimpleName().toLowerCase();
+					System.out.println("printing the name :: "+name);
+					System.out.println("printing the map name :: "+ (name+"."+f.getName()));
+					boolean containsKey = formData.containsKey(name+"."+f.getName());
+					System.out.println(containsKey);
+					System.out.println(formData.get(name+"."+f.getName()).get(0));
+					f.set(newInstance, ReflectionUtils.parse(formData.get(name+"."+f.getName()).get(0).toString(), f.getType()));
+					formData.remove(name+"."+f.getName());
+				}
+				//f.set(newInstance, ReflectionUtils.parse(formData.get(f.getName()).get(0).toString(), f.getType()));
+				
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private Class<?> getClazz(String className) {
+		Class<?> clazz =null;
+		try {
+			clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return clazz;
+	}
+
+	public Object getClassField(MultiValueMap<String, Object> formData, Class<?> clazz) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
+			SecurityException, IntrospectionException, JsonMappingException, JsonProcessingException {
 		Set<String> keySet = formData.keySet();
-		
+
 		/*
 		 * Set<String> keySet = formData.keySet();
 		 * 
@@ -253,86 +305,78 @@ public class JetFormServiceImpl implements JetFormService {
 		 * object=string; Object invoke = getter.invoke(obj, object); // Object f =
 		 * getter.invoke(obj); }
 		 */
-		  /*Set<String> keySet = formData.keySet();
-		  Object object = clazz.getDeclaredConstructor().newInstance();
-		  //Field field;
-		  formData.remove("className");
-		  ObjectMapper mapper = new ObjectMapper();
-		  String writeValueAsString = mapper.writeValueAsString(formData);
-		  String replace = writeValueAsString.replace("[", "").replace("]", "");
-		  System.out.println(writeValueAsString);
-		  System.out.println(replace);
-		  Object mappedObject = mapper.readValue(replace, object.getClass());
-		  System.out.println(mappedObject);
-		  System.out.println(mappedObject.getClass().getName());
-		  Object save = repository.save(mappedObject);
-		  //Object readValue = mapper.readValue(mapper.writeValueAsString(formData), object.getClass());
-		  //mapper.convertValue(object, new TypeReference<Map<String, Object>>() {});
-		 /* MultiValueMap valueMap = new LinkedMultiValueMap<String, Object>();
-		  Map<String, Object> fieldMap = objectMapper.convertValue(requestObject, new TypeReference<Map<String, Object>>() {});
-		  valueMap.setAll(fieldMap);
-		  System.out.println(readValue);
-		  /*	for(String attribute:keySet) { 
-		  if(attribute.equalsIgnoreCase("classname"))
-		          continue; 
-			  
-			    try { 
-			    	 field = clazz.getDeclaredField(attribute);
-			    	 Class<?> type = field.getType();
-			    	 System.out.println(type.getName());
-		             field.setAccessible(true); 
-		             System.out.println("FIeld name"+ field.getName());
-		             System.out.println(formData.get(attribute).get(0));
-		             field.set(object,castObject(field.getType(),formData.get(attribute).get(0)));
-		             
-		             //field.set(object,field.getType().cast(formData.get(attribute).get(0)));
-		             //castObject(field.getType(),formData.get(attribute).get(0))
-		             //field.set(object,formData.get(attribute).get(0));
-		            // field.set(object,type.cast(formData.get(attribute).get(0)));
-		               //f.set(t, f.getType().cast(entry.getValue()));
-		  } catch (NoSuchFieldException |SecurityException | IllegalArgumentException
-		  |IllegalAccessException e) { e.printStackTrace(); }
-		  
-		  }*/
-		 
-		
-		  Object newInstance = clazz.getDeclaredConstructor().newInstance();
-	  keySet.stream()
-		        .filter(e -> !e.equalsIgnoreCase("className"))
-		        .forEach(attr -> { 
-		        	  Field f; 
-		        	  try { 
-		        		   f = clazz.getDeclaredField(attr);
-		        		   System.out.println(f.getName());
-		        		   System.out.println(formData.get(attr).get(0));
-		                   f.setAccessible(true); 
-		                   f.set(newInstance, ReflectionUtils.parse(formData.get(attr).get(0).toString(), f.getType()));
-		                  // f.set(clazz, formData.get(attr).get(0)); 
-		                   } catch(NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) { 
-		                	   // TODO // Auto-generated // catch // block
-		                        e.printStackTrace(); 
-		                   } 
-		        	  });
-		 
+		/*
+		 * Set<String> keySet = formData.keySet(); Object object =
+		 * clazz.getDeclaredConstructor().newInstance(); //Field field;
+		 * formData.remove("className"); ObjectMapper mapper = new ObjectMapper();
+		 * String writeValueAsString = mapper.writeValueAsString(formData); String
+		 * replace = writeValueAsString.replace("[", "").replace("]", "");
+		 * System.out.println(writeValueAsString); System.out.println(replace); Object
+		 * mappedObject = mapper.readValue(replace, object.getClass());
+		 * System.out.println(mappedObject);
+		 * System.out.println(mappedObject.getClass().getName()); Object save =
+		 * repository.save(mappedObject); //Object readValue =
+		 * mapper.readValue(mapper.writeValueAsString(formData), object.getClass());
+		 * //mapper.convertValue(object, new TypeReference<Map<String, Object>>() {});
+		 * /* MultiValueMap valueMap = new LinkedMultiValueMap<String, Object>();
+		 * Map<String, Object> fieldMap = objectMapper.convertValue(requestObject, new
+		 * TypeReference<Map<String, Object>>() {}); valueMap.setAll(fieldMap);
+		 * System.out.println(readValue); /* for(String attribute:keySet) {
+		 * if(attribute.equalsIgnoreCase("classname")) continue;
+		 * 
+		 * try { field = clazz.getDeclaredField(attribute); Class<?> type =
+		 * field.getType(); System.out.println(type.getName());
+		 * field.setAccessible(true); System.out.println("FIeld name"+ field.getName());
+		 * System.out.println(formData.get(attribute).get(0));
+		 * field.set(object,castObject(field.getType(),formData.get(attribute).get(0)));
+		 * 
+		 * //field.set(object,field.getType().cast(formData.get(attribute).get(0)));
+		 * //castObject(field.getType(),formData.get(attribute).get(0))
+		 * //field.set(object,formData.get(attribute).get(0)); //
+		 * field.set(object,type.cast(formData.get(attribute).get(0))); //f.set(t,
+		 * f.getType().cast(entry.getValue())); } catch (NoSuchFieldException
+		 * |SecurityException | IllegalArgumentException |IllegalAccessException e) {
+		 * e.printStackTrace(); }
+		 * 
+		 * }
+		 */
+
+		Object newInstance = clazz.getDeclaredConstructor().newInstance();
+		keySet.stream().filter(e -> !e.equalsIgnoreCase("className")).forEach(attr -> {
+			Field f;
+			try {
+				f = clazz.getDeclaredField(attr);
+				System.out.println(f.getName());
+				System.out.println(formData.get(attr).get(0));
+				f.setAccessible(true);
+				f.set(newInstance, ReflectionUtils.parse(formData.get(attr).get(0).toString(), f.getType()));
+				// f.set(clazz, formData.get(attr).get(0));
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				// TODO // Auto-generated // catch // block
+				e.printStackTrace();
+			}
+		});
+
 		/*
 		 * Arrays.stream(clazz.getDeclaredFields()).forEach(e -> {
 		 * e.setAccessible(true); e.set(clazz, e); });
 		 */
 		return newInstance;
 	}
-	
-	 public static Object invokeGetter(Object obj, String variableName)
-	    {    Object f =null;
-	        try {
-	            PropertyDescriptor pd = new PropertyDescriptor(variableName, obj.getClass());
-	            Method getter = pd.getReadMethod();
-	             f = getter.invoke(obj);
-	           
-	        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IntrospectionException e) {
-	            e.printStackTrace();
-	        }
-	        return f;
-	    }
+
+	public static Object invokeGetter(Object obj, String variableName) {
+		Object f = null;
+		try {
+			PropertyDescriptor pd = new PropertyDescriptor(variableName, obj.getClass());
+			Method getter = pd.getReadMethod();
+			f = getter.invoke(obj);
+
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| IntrospectionException e) {
+			e.printStackTrace();
+		}
+		return f;
+	}
 
 	private void populateElements(List<FormElementWrapper> elements, Object entity) {
 
@@ -382,14 +426,13 @@ public class JetFormServiceImpl implements JetFormService {
 	}
 
 	@Override
-	public boolean deleteMultiple(Long [] deletedIDs, String className) throws ClassNotFoundException {
-		
+	public boolean deleteMultiple(Long[] deletedIDs, String className) throws ClassNotFoundException {
+
 		Class<?> clazz = Class.forName(className);
-		Arrays.stream(deletedIDs)
-			.forEach(a->{
-				repository.delete(a, clazz);
-			});
-	
+		Arrays.stream(deletedIDs).forEach(a -> {
+			repository.delete(a, clazz);
+		});
+
 		return false;
 	}
 
@@ -397,16 +440,16 @@ public class JetFormServiceImpl implements JetFormService {
 	public List<String> getAutoCompleteSourceData(String className, String fieldName) {
 		List<?> list = getList(className);
 		List<String> autoCompleteSourceData = new ArrayList<>();
-		for(Object object : list) {
-			Class<? extends Object> class1 = object.getClass();
-			System.out.println("printing the class "+class1.getName());
+		for (Object object : list) {
+			Class<? extends Object> clazz = object.getClass();
+			System.out.println("printing the class " + clazz.getName());
 			try {
-				Field declaredField = class1.getDeclaredField(fieldName);
-				       declaredField.setAccessible(true);
-				       Object object2 = declaredField.get(object);
-				//Field field = class1.getField(fieldName);
-				//field.setAccessible(true);
-				//Object fieldValue = field.get(object);
+				Field declaredField = clazz.getDeclaredField(fieldName);
+				declaredField.setAccessible(true);
+				Object object2 = declaredField.get(object);
+				// Field field = class1.getField(fieldName);
+				// field.setAccessible(true);
+				// Object fieldValue = field.get(object);
 				autoCompleteSourceData.add(object2.toString());
 			} catch (NoSuchFieldException e) {
 				// TODO Auto-generated catch block
@@ -422,7 +465,7 @@ public class JetFormServiceImpl implements JetFormService {
 				e.printStackTrace();
 			}
 		}
-			System.out.println(" inside service "+autoCompleteSourceData);
+		System.out.println(" inside service " + autoCompleteSourceData);
 		return autoCompleteSourceData;
 	}
 

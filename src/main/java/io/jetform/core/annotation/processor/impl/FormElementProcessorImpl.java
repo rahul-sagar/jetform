@@ -2,6 +2,7 @@ package io.jetform.core.annotation.processor.impl;
 
 import java.lang.reflect.Field;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.jetform.core.annotation.Checkbox;
@@ -22,6 +23,7 @@ import io.jetform.core.annotation.model.EmailWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.FormWrapper;
 import io.jetform.core.annotation.model.HiddenWrapper;
+import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.annotation.model.NumberWrapper;
 import io.jetform.core.annotation.model.RadioWrapper;
 import io.jetform.core.annotation.model.SelectWrapper;
@@ -29,11 +31,15 @@ import io.jetform.core.annotation.model.TextAreaWrapper;
 import io.jetform.core.annotation.model.TextWrapper;
 import io.jetform.core.annotation.model.UploadWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
+import io.jetform.core.engine.helper.FormRenderer;
 import io.jetform.core.helperclasses.JetFormUtils;
 
 @Component
 public class FormElementProcessorImpl implements FormElementProcessor {
 
+	@Autowired
+	private FormRenderer formRenderer;
+	
 	@Override
 	public FormElementWrapper process(Field field) {
 		FormElement annotation = field.getAnnotation(FormElement.class);
@@ -77,7 +83,11 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 	}
 
 	private FormWrapper process(Form form) {
-		return null;
+		JetFormWrapper jetFormWrapper = formRenderer.getForm(form.formClass());
+		System.out.println("printing the jetFormWrapper :: FormWrapper process(Form form)");
+		System.out.println(jetFormWrapper);
+		return new FormWrapper(form, jetFormWrapper);
+		//return new FormWrapper(form);
 	}
 
 	private CheckBoxWrapper process(Checkbox checkbox) {
@@ -104,7 +114,10 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		if (annotation instanceof FormElement) 
 			formElement = (FormElement) annotation;
 		
-		if (!(formElement.form().childKey().isEmpty() || formElement.form().parentKey().isEmpty())) 
+		//if (!(formElement.form().childKey().isEmpty() || formElement.form().parentKey().isEmpty())) 
+		//	return process(formElement.form());
+		
+		if (!(formElement.form().formClass().isEmpty())) 
 			return process(formElement.form());
 		
 		else if (!formElement.number().format().isEmpty()) 
@@ -146,6 +159,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		}
 		if (formElement.name().equals("")) {
 			formElementWrapper.setName(field.getName());
+			System.out.println("Printing the field name : "+field.getName());
 		}
 		if (formElement.label().equals("")) {
 			formElementWrapper.setLabel(JetFormUtils.createLabel(field.getName()));
