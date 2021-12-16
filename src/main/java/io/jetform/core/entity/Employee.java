@@ -86,7 +86,7 @@ public class Employee {
 				           @Validation(type = ValidationType.MAX,value = "90")})
 	int age;
 
-	//@FormElement(date = @Date(format = "dd/mm/yyyy"))
+	@FormElement(date = @Date(format = "dd/mm/yy"))
 	private String dateOfBirth;
 	
 	

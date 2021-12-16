@@ -36,6 +36,7 @@ import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.engine.helper.FormRenderer;
+import io.jetform.core.entity.Customer;
 import io.jetform.core.entity.DocumentMedia;
 import io.jetform.core.repository.DocumentMediaRepo;
 import io.jetform.core.repository.JetFormRepository;
@@ -210,7 +211,28 @@ public class JetFormServiceImpl implements JetFormService {
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} /*catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IntrospectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
         //return entity;
 		return repository.save(entity);
 	}
@@ -224,7 +246,7 @@ public class JetFormServiceImpl implements JetFormService {
 		try {
 			Object newInstance = clazz.getDeclaredConstructor().newInstance();
 			
-			Arrays.stream(clazz.getDeclaredFields()).forEach(f -> poplateObject(formData, newInstance, f));
+			Arrays.stream(clazz.getDeclaredFields()).forEach(f -> populateObject(formData, newInstance, f));
 			saveObject = newInstance;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
@@ -235,7 +257,7 @@ public class JetFormServiceImpl implements JetFormService {
 		return saveObject;
 	}
 
-	private void poplateObject(MultiValueMap<String, Object> formData, Object newInstance, Field f) {
+	private void populateObject(MultiValueMap<String, Object> formData, Object newInstance, Field f) {
 		 f.setAccessible(true);
 		if (f.isAnnotationPresent(FormElement.class)
 				&& !f.getAnnotation(FormElement.class).form().formClass().isBlank()) {
@@ -285,6 +307,11 @@ public class JetFormServiceImpl implements JetFormService {
 			e.printStackTrace();
 		}
 		return clazz;
+	}
+	
+	public static <T> boolean isJDKClass(T t) {
+		
+	     return t.getClass().getPackage().getName().startsWith("java");
 	}
 
 	public Object getClassField(MultiValueMap<String, Object> formData, Class<?> clazz) throws InstantiationException,
