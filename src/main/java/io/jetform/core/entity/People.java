@@ -52,10 +52,10 @@ public class People {
 //			@Validation(type = ValidationType.MINDATE, value = "21-12-05")
 	private LocalDate dateOfBirth;
 	
-	@FormElement( listable=true,date=@Date(format="yy-mm-dd"))
+	@FormElement(listable=true,date=@Date(format="yy-mm-dd"))
 	private LocalDate dateOfJoining;
 	
-	@FormElement(listable=false,upload=@Upload(type=UploadType.PDF,dataProvider=@DataProvider(path="F://jetform-engine//temp//",loadType=LoadType.LAZY,resource=ResourceType.FILE)))
+	@FormElement(listable=false,upload=@Upload(type=UploadType.PDF,dataProvider=@DataProvider(path="D://DocumentMedia//temp//",loadType=LoadType.LAZY,resource=ResourceType.FILE)))
 	private String resume;
 	
 	

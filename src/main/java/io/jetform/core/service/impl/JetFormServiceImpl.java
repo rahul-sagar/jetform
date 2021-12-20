@@ -12,10 +12,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.activation.FileDataSource;
@@ -31,9 +33,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.gson.Gson;
 
+import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormElementWrapper;
+import io.jetform.core.annotation.model.FormWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.engine.helper.FormRenderer;
 import io.jetform.core.entity.Customer;
@@ -181,12 +185,84 @@ public class JetFormServiceImpl implements JetFormService {
 		System.out.println("Form wrapper: " + formWrapper);
 		List<FormElementWrapper> elements = formWrapper.getElements();
 
+		//populateElements(elements, entity);
+		System.out.println("Elements before populating: " + elements);
 		populateElements(elements, entity);
 		System.out.println("Elements after populating: " + elements);
-		formWrapper.setElements(elements);
+		//formWrapper.setElements(elements);
 		return formWrapper;
 	}
-
+	
+	private void populateElements(List<FormElementWrapper> elements ,Object entity) {
+		
+		Field[] declaredFields = entity.getClass().getDeclaredFields();
+		//elements.stream().filter(e-> e.getName().equalsIgnoreCase(null)).forEach(e->e.setValue(null));
+		Arrays.stream(declaredFields).forEach(f->{
+			  f.setAccessible(true);
+			  if(f.isAnnotationPresent(FormElement.class)&& !f.getAnnotation(FormElement.class).form().formClass().isBlank()) {
+				 
+				  String formClass = f.getAnnotation(FormElement.class).form().formClass();
+				  JetFormWrapper jetFormWrapper = getFormWrapper(formClass);
+				  List<FormElementWrapper> elements2 = jetFormWrapper.getElements();
+				  elements.stream().filter(e-> e.getName().equalsIgnoreCase(f.getName())).forEach(e -> {
+						 FormWrapper formWrapper =(FormWrapper)e;
+						 formWrapper.setJetFormWrapper(jetFormWrapper);
+					  });
+				//  System.out.println("Printing the elements :: "+elements);
+				  Object object = null;
+					try {
+						object = f.get(entity);
+					} catch (IllegalArgumentException | IllegalAccessException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					  populateElements(elements2,object);
+				  
+			  }else {
+				  try {
+					Object object = f.get(entity);
+					elements.stream().filter(e-> e.getName().equalsIgnoreCase(f.getName())).forEach(e -> e.setValue(object.toString()));
+					  } catch (IllegalArgumentException | IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+					  }
+			  }
+		});
+	}
+	
+	
+	/*
+	 * private void populateElements(List<FormElementWrapper> elements, Object
+	 * entity) {
+	 * 
+	 * //Map<String, String> elementsMapWithValues = new HashMap<String, String>();
+	 * Map<String, Object> elementsMapWithValues = new HashMap<String, Object>();
+	 * 
+	 * Field[] declaredFields = entity.getClass().getDeclaredFields();
+	 * 
+	 * Arrays.stream(declaredFields).forEach(field -> {
+	 * 
+	 * try { field.setAccessible(true); System.out.println(field.getClass()); Object
+	 * object = field.get(entity); //elementsMapWithValues.put(field.getName(),
+	 * String.valueOf(object)); elementsMapWithValues.put(field.getName(), object);
+	 * } catch (IllegalArgumentException | IllegalAccessException e1) {
+	 * e1.printStackTrace(); } });
+	 * 
+	 * System.out.println("Elements Map: " + elementsMapWithValues);
+	 * 
+	 * elements.forEach(e -> { if(!e.getFieldType().equalsIgnoreCase("form")) {
+	 * e.setValue(String.valueOf(elementsMapWithValues.get(e.getName()))); }else {
+	 * String name = e.getName(); FormWrapper formWrapper = (FormWrapper)e; Object
+	 * object = elementsMapWithValues.get(name); String formClass =
+	 * formWrapper.getFormClass(); JetFormWrapper formWrapper2 =
+	 * formWrapper.getJetFormWrapper(); List<FormElementWrapper> elements2 =
+	 * formWrapper2.getElements(); populateElements(elements, entity); }
+	 * 
+	 * });
+	 * 
+	 * //ognl }
+	 * 
+	 */
 	@Override
 	public Object saveEntity(MultiValueMap<String, Object> formData) {
 		// List<String> list = formData.get("className");
@@ -405,31 +481,7 @@ public class JetFormServiceImpl implements JetFormService {
 		return f;
 	}
 
-	private void populateElements(List<FormElementWrapper> elements, Object entity) {
-
-		Map<String, String> elementsMapWithValues = new HashMap<String, String>();
-
-		Field[] declaredFields = entity.getClass().getDeclaredFields();
-
-		Arrays.stream(declaredFields).forEach(field -> {
-
-			try {
-				field.setAccessible(true);
-				System.out.println(field.getClass());
-				Object object = field.get(entity);
-				elementsMapWithValues.put(field.getName(), String.valueOf(object));
-			} catch (IllegalArgumentException | IllegalAccessException e1) {
-				e1.printStackTrace();
-			}
-		});
-
-		System.out.println("Elements Map: " + elementsMapWithValues);
-
-		elements.forEach(e -> {
-			e.setValue(elementsMapWithValues.get(e.getName()));
-		});
-	}
-
+	
 	@Override
 	public boolean deleteEntity(Long id, String className) {
 		Class<?> clazz = null;
@@ -496,4 +548,41 @@ public class JetFormServiceImpl implements JetFormService {
 		return autoCompleteSourceData;
 	}
 
+	@Override
+	public List<?> getFilteredList(String className, String filter) {
+		List<?> list = getList(className);
+		String[] split = filter.split(":");
+		System.out.println("printing the the split :: "+filter);
+		List<Object> collect = list.stream().map(o -> filter(o, split)).filter(notNull).collect(Collectors.toList());
+		
+		//list.stream().filter()
+		return collect;
+	}
+
+	private Predicate<Object> notNull = (Object o)-> o != null;
+
+	private Object filter(Object o,String[] filter) {
+		Class clazz = o.getClass();
+		Field[] declaredFields = clazz.getDeclaredFields();
+		Object object = Arrays.asList(declaredFields).stream().map( f -> isExists(o, filter, f)).filter(notNull).findFirst().orElse(null);
+		return object;
+	};
+
+	private Object isExists(Object o,String[] filter,Field field) {
+		System.out.println("printing the filter :: "+filter[0]+" "+filter[1]);
+		field.setAccessible(true);
+		try {
+			boolean isFieldValueMatched = field.get(o).toString().equalsIgnoreCase(filter[1]);
+			if(field.getName().equalsIgnoreCase(filter[0]) && isFieldValueMatched) {
+				
+				return o;
+			}
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 }

@@ -10,6 +10,7 @@ import io.jetform.core.entity.DocumentMedia;
 
 public interface JetFormService {
     public String getFormJson(String className);
+    public List<?> getFilteredList(String className,String filter);
     public List<?> getList(String className);
     public List<String> getEntities();
     public JetFormWrapper getFormWrapper(String className);

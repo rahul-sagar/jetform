@@ -15,6 +15,7 @@ import io.jetform.core.annotation.processor.FormElementProcessor;
 import io.jetform.core.annotation.processor.impl.FormElementProcessorImpl;
 import io.jetform.core.engine.helper.FormRenderer;
 import io.jetform.core.helperclasses.JetFormUtils;
+import io.jetform.core.repository.JetFormRepository;
 
 @Component
 public class FormRendererImpl implements FormRenderer{
@@ -82,6 +83,10 @@ public class FormRendererImpl implements FormRenderer{
 		}
 		if (jetForm.title().equals("")) {
 			jetFormWrapper.setTitle(JetFormUtils.createLabel(className));
+		}
+		
+		if(!jetForm.filter().isBlank()) {
+			jetFormWrapper.setFilter(jetForm.filter());
 		}
 		if(jetForm.listIndex()==jetForm.selectable()) {
 			if(jetForm.listIndex()==false) {
