@@ -181,6 +181,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		formElementWrapper.setValidations(JetFormUtils.getValidations(formElement));
 		formElementWrapper.setAutoComplete(formElement.autocomplete());
 		formElementWrapper.setValue(formElement.value());
+		formElementWrapper.setDependField(formElement.dependField());
 		return formElementWrapper;
 	}
 }

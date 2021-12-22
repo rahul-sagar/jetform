@@ -553,7 +553,10 @@ public class JetFormServiceImpl implements JetFormService {
 		List<?> list = getList(className);
 		String[] split = filter.split(":");
 		System.out.println("printing the the split :: "+filter);
-		List<Object> collect = list.stream().map(o -> filter(o, split)).filter(notNull).collect(Collectors.toList());
+		List<Object> collect = list.stream()
+				                      .map(o -> filter(o, split))
+				                      .filter(notNull)
+				                      .collect(Collectors.toList());
 		
 		//list.stream().filter()
 		return collect;
@@ -562,13 +565,17 @@ public class JetFormServiceImpl implements JetFormService {
 	private Predicate<Object> notNull = (Object o)-> o != null;
 
 	private Object filter(Object o,String[] filter) {
-		Class clazz = o.getClass();
+		Class<?> clazz = o.getClass();
 		Field[] declaredFields = clazz.getDeclaredFields();
-		Object object = Arrays.asList(declaredFields).stream().map( f -> isExists(o, filter, f)).filter(notNull).findFirst().orElse(null);
+		Object object = Arrays.asList(declaredFields).stream()
+				                                        .map( f -> isExists(o, filter, f))
+				                                        .filter(notNull)
+				                                        .findFirst()
+				                                        .orElse(null);
 		return object;
 	};
 
-	private Object isExists(Object o,String[] filter,Field field) {
+	private Object isExists(Object o, String[] filter, Field field) {
 		System.out.println("printing the filter :: "+filter[0]+" "+filter[1]);
 		field.setAccessible(true);
 		try {
