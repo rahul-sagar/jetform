@@ -37,13 +37,13 @@ public class Customer {
 			@Validation(type = ValidationType.MINLENGTH, value = "2") })
 	private String firstName;
 
-	@FormElement(listable = true, autocomplete = true, validations = {
+	@FormElement(listable = true, validations = {
 			@Validation(type = ValidationType.REQUIRED, value = "true"),
 			@Validation(type = ValidationType.MINLENGTH, value = "2") })
 	private String lastName;
 
 	
-	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address"))
+	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address"),listable=true)
 	@OneToOne(cascade = {CascadeType.ALL})
 	private Address address;
 
