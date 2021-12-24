@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import io.jetform.core.annotation.DataProvider;
+import io.jetform.core.annotation.DependentField;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.Hidden;
@@ -33,7 +34,7 @@ public class User {
 	  @FormElement(hidden = @Hidden(value = "0"))
 	  private long id;	
 	  
-	  @FormElement(listable = true, select = @Select(options = { "UP:UP", "MP:MP", "UK:UK" }), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
+	  @FormElement(listable = true,dependentFields = {@DependentField(child = "city",datapath = "data",type = "load")} ,select = @Select(options = { "UP:UP", "MP:MP", "UK:UK" }), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
 	  private String state;
 	   //options = { "Ghaziabad:Ghaziabad", "Bhopal:Bhopal", "Hariduar:Hariduar" }
 	  @FormElement(listable = true, dependField = "state", select = @Select(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data",loadType = LoadType.LAZY)), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
@@ -42,7 +43,7 @@ public class User {
 	  @FormElement(listable = true, validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
 	  private String street;
 	  
-	  @FormElement(listable = true, radio = @Radio(options = { "Edu:Educated", "UnEdu:UnEducated"}))
+	  @FormElement(listable = true, dependentFields = {@DependentField(child = "qualification",datapath = "Edu",type = "hidden"),@DependentField(child = "street",datapath = "Edu",type = "hidden")},radio = @Radio(options = { "Edu:Educated", "UnEdu:UnEducated"}))
 	  private String education;
 	  
 	  @FormElement(listable = true, select = @Select(options = {"H:High School", "Inter:InterMediate"}))

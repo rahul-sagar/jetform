@@ -102,6 +102,7 @@ public class FormRendererImpl implements FormRenderer{
 			jetFormWrapper.setListIndex(jetForm.listIndex());
 			jetFormWrapper.setSelectable(jetForm.selectable());		
 		}
+		
 
 		System.out.println("form wrapper"+jetFormWrapper);
         //return jetFormWrapper;
