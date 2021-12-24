@@ -27,6 +27,8 @@ import io.jetform.core.enums.ValidationType;
 		@FormAction(name = "/delete",action = Action.DELETE, label = "Delete"),
 		@FormAction(name = "/list",action = Action.READ, label = "Read")})
 public class Contact {
+	
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +36,10 @@ public class Contact {
 	@FormElement(hidden = @Hidden(value = "0"))
 	private long id;
 	
-	@FormElement(email=@Email(pattern="######"),listable=true,validations= @Validation(type=ValidationType.REQUIRED,value="true"))
+	@FormElement(email=@Email(pattern="######"),listable=true,autocomplete=true,validations= @Validation(type=ValidationType.REQUIRED,value="true"))
 	private String altEmailAddress;
 	
-	@FormElement(number=@Number(format="#####"),validations=@Validation(type=ValidationType.REQUIRED,value="true"),listable=true)
+	@FormElement(number=@Number(format="#####"),autocomplete=true,validations=@Validation(type=ValidationType.REQUIRED,value="true"),listable=true)
 	private String  emergencyMobile;
 	
 		

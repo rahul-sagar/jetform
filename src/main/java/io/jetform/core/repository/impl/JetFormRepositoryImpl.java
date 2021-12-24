@@ -28,6 +28,7 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	
 	@Transactional
 	public Object getEntity(Long id,Class<?> clazz) {
+		
 		TypedQuery<?> query=entityManager.createQuery("select e from "+clazz.getName()+" e where id="+id, clazz);
 		Object entity = query.getSingleResult();
 		
@@ -37,6 +38,7 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	@Override
 	@Transactional
 	public Object save(Object object) {
+		
 		Object saveEntity = entityManager.merge(object);
 		return saveEntity;
 	}
@@ -44,12 +46,14 @@ public class JetFormRepositoryImpl implements JetFormRepository {
 	@Override
 	@Transactional
 	public void delete(Long id,Class<?> clazz) {
+		
 		Object entity = getEntity(id, clazz);
 		entityManager.remove(entity);
 //		entityManager.remo
 	}
 	
 	public boolean deleteMultiple(Long[]id,Class<?> clazz) {
+		
 		entityManager.createQuery("delete from "+clazz.getName()+" where IN "+"(8,9,11)",clazz);
 		return true;
 	}

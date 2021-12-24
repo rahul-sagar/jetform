@@ -48,6 +48,7 @@ import io.jetform.core.service.JetFormService;
 import io.jetform.core.service.exception.StorageException;
 import io.jetform.util.ReflectionUtils;
 
+
 @Component
 public class JetFormServiceImpl implements JetFormService {
 
@@ -199,7 +200,7 @@ public class JetFormServiceImpl implements JetFormService {
 		//elements.stream().filter(e-> e.getName().equalsIgnoreCase(null)).forEach(e->e.setValue(null));
 		Arrays.stream(declaredFields).forEach(f->{
 			  f.setAccessible(true);
-			  if(f.isAnnotationPresent(FormElement.class)&& !f.getAnnotation(FormElement.class).form().formClass().isBlank()) {
+			  if(f.isAnnotationPresent(FormElement.class)&& !f.getAnnotation(FormElement.class).form().formClass().isEmpty()) {
 				 
 				  String formClass = f.getAnnotation(FormElement.class).form().formClass();
 				  JetFormWrapper jetFormWrapper = getFormWrapper(formClass);
@@ -336,7 +337,7 @@ public class JetFormServiceImpl implements JetFormService {
 	private void populateObject(MultiValueMap<String, Object> formData, Object newInstance, Field f) {
 		 f.setAccessible(true);
 		if (f.isAnnotationPresent(FormElement.class)
-				&& !f.getAnnotation(FormElement.class).form().formClass().isBlank()) {
+				&& !f.getAnnotation(FormElement.class).form().formClass().isEmpty()) {
 			String formClass = f.getAnnotation(FormElement.class).form().formClass();
                     Class<?> clazz = getClazz(formClass);  
                    
