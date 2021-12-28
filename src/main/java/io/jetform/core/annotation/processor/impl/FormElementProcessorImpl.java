@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.jetform.core.annotation.Checkbox;
+import io.jetform.core.annotation.CustomField;
 import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.Form;
@@ -18,6 +19,7 @@ import io.jetform.core.annotation.Text;
 import io.jetform.core.annotation.TextArea;
 import io.jetform.core.annotation.Upload;
 import io.jetform.core.annotation.model.CheckBoxWrapper;
+import io.jetform.core.annotation.model.CustomFieldWrapper;
 import io.jetform.core.annotation.model.DateWrapper;
 import io.jetform.core.annotation.model.EmailWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
@@ -102,6 +104,10 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		return new DateWrapper(date);
 	}
 	
+	private CustomFieldWrapper process(CustomField customField) {
+		return new CustomFieldWrapper(customField);
+	}
+	
 	private UploadWrapper process(Upload upload) {		
 		return new UploadWrapper(upload);
 	}
@@ -128,6 +134,9 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 
 		else if (!formElement.date().format().isEmpty()) 
 			return process(formElement.date());
+		
+		else if (!formElement.customField().filePath().isEmpty()) 
+			return process(formElement.customField());
 		
 		else if (!formElement.hidden().value().isEmpty()) 
 			return process(formElement.hidden());

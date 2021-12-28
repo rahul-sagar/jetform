@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.CustomField;
 import io.jetform.core.annotation.DataProvider;
 import io.jetform.core.annotation.DependentField;
 import io.jetform.core.annotation.FormAction;
@@ -49,6 +50,9 @@ public class User {
 	  @FormElement(listable = true, select = @Select(options = {"H:High School", "Inter:InterMediate"}))
 	  private String qualification;
 
+	  @FormElement(listable = true,customField = @CustomField(filePath = "/file/select.html"))
+	  private String section;
+	  
 	public long getId() {
 		return id;
 	}
@@ -100,6 +104,14 @@ public class User {
 
 	public void setQualification(String qualification) {
 		this.qualification = qualification;
+	}
+
+	public String getSection() {
+		return section;
+	}
+
+	public void setSection(String section) {
+		this.section = section;
 	}
  
 }
