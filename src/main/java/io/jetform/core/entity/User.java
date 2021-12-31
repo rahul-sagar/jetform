@@ -50,7 +50,7 @@ public class User {
 	  @FormElement(listable = true, select = @Select(options = {"H:High School", "Inter:InterMediate"}))
 	  private String qualification;
 
-	  @FormElement(listable = true,customField = @CustomField(filePath = "/file/select.html"))
+	  @FormElement(listable = true,customField = @CustomField(filePath = "WEB-INF/jsp/select.html"))//WEB-INF/jsp/select.html /file/select.html
 	  private String section;
 	  
 	public long getId() {

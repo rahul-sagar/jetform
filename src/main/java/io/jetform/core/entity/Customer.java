@@ -15,6 +15,7 @@ import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
+import io.jetform.core.enums.Relation;
 import io.jetform.core.enums.Type;
 import io.jetform.core.enums.ValidationType;
 
@@ -43,7 +44,7 @@ public class Customer {
 	private String lastName;
 
 	
-	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address"),listable=true)
+	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address",relation = Relation.ONE_TO_MANY),listable=true)
 	@OneToOne(cascade = {CascadeType.ALL})
 	private Address address;
 
