@@ -38,7 +38,7 @@ public class User {
 	  @FormElement(listable = true,dependentFields = {@DependentField(child = "city",datapath = "data",type = "load")} ,select = @Select(options = { "UP:UP", "MP:MP", "UK:UK" }), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
 	  private String state;
 	   //options = { "Ghaziabad:Ghaziabad", "Bhopal:Bhopal", "Hariduar:Hariduar" }
-	  @FormElement(listable = true, dependField = "state", select = @Select(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data",loadType = LoadType.LAZY)), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
+	  @FormElement(listable = true, select = @Select(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data",loadType = LoadType.LAZY)), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
 	  private String city;
 	  
 	  @FormElement(listable = true, validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
@@ -50,7 +50,7 @@ public class User {
 	  @FormElement(listable = true, select = @Select(options = {"H:High School", "Inter:InterMediate"}))
 	  private String qualification;
 
-	  @FormElement(listable = true,customField = @CustomField(filePath = "WEB-INF/jsp/select.html"))//WEB-INF/jsp/select.html /file/select.html
+	  @FormElement(listable = true,customField = @CustomField(filePath = "select"))//WEB-INF/jsp/select.html /file/select.html
 	  private String section;
 	  
 	public long getId() {

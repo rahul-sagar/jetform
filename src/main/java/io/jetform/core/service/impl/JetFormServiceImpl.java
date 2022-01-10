@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -19,9 +21,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.activation.FileDataSource;
 
+import org.aspectj.apache.bcel.generic.RET;
+import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +52,10 @@ import io.jetform.core.repository.JetFormRepository;
 import io.jetform.core.service.JetFormService;
 import io.jetform.core.service.exception.StorageException;
 import io.jetform.util.ReflectionUtils;
+import ognl.MemberAccess;
+import ognl.Ognl;
+import ognl.OgnlContext;
+import ognl.OgnlException;
 
 
 @Component
@@ -264,6 +273,144 @@ public class JetFormServiceImpl implements JetFormService {
 	 * //ognl }
 	 * 
 	 */
+	
+	@Override
+	public Object saveEntityByOGNL(MultiValueMap<String, Object> formData) {
+		
+		List<Object> list = formData.get("className");
+		System.out.println("printing the className " + list.get(0));
+		formData.remove("className");
+		System.out.println("Printing the formData after className removed:: "+formData);
+		Class<?> clazz = null;
+		Object entity = null;
+		try {
+			clazz = Class.forName(list.get(0).toString());
+			
+			Object initNewInstance = initType(clazz ,formData.keySet());
+		    
+			System.out.println("");
+			formData.keySet().stream().forEach(k -> populateEntity(k, formData, initNewInstance));
+			System.out.println("newInstance ::: "+initNewInstance);
+			System.out.println("Printing the entity :::: "+initNewInstance);
+			entity = initNewInstance;
+			return repository.save(entity);
+			
+			
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		
+		return entity;
+	}
+	
+	public Object[] getNewInstance(String className, int countListSize) {
+		Object[] newObjects = new Object[countListSize];
+		for(int i = 0; i < countListSize  ; i++) {
+			 try {
+				newObjects[i] = Class.forName(className).getDeclaredConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+						| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
+				}
+		}
+			
+		System.out.println("Printing Object[] :: "+newObjects.toString());
+		return newObjects;
+	}
+	
+	public void populateListAndSetToField(Field field,Class<?> type, Object instance, Object[] params) throws IllegalArgumentException, IllegalAccessException {
+	    System.out.println("populateListAndSetToField(Field field,Class<?> type, Object instance, Object[] params) :: "+params.length);
+		List<?> list = getGenericList(type, params);
+	    field.set(instance, list);
+	}
+
+	private <Type> List<Type> getGenericList(Class<Type> type, Object[] params) {
+	    List<Type> l = new ArrayList<Type>();
+	    System.out.println(l);
+	    for (int i = 0; i < params.length; i++) {
+	        l.add((Type) params[i]);
+	    }
+	    return l;
+	}
+	
+	public Object initType(Class<?> clazz, Set<String> formKeySet) {
+		
+		try {
+			Object newInstance = clazz.getDeclaredConstructor().newInstance();
+			  
+			Arrays.stream(clazz.getDeclaredFields())
+			         .filter(f -> f.isAnnotationPresent(FormElement.class) && !f.getAnnotation(FormElement.class).form().formClass().isEmpty())
+			         .forEach(e -> initListField(newInstance, e ,formKeySet));
+			System.out.println(newInstance);
+			return newInstance;
+			
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			return null;
+	}
+
+	private void initListField(Object newInstance, Field e, Set<String> formKeySet) {
+		e.setAccessible(true);
+		 System.out.println("====================================");
+		 System.out.println(e.getName());
+		 System.out.println(e.getType().getCanonicalName());
+		 System.out.println(e.getType().getSimpleName());
+		 System.out.println(e.getGenericType());
+		 System.out.println();
+		 System.out.println("====================================");
+		 try {
+			 String formClass = e.getAnnotation(FormElement.class).form().formClass();
+			 int countListSize = countListSize(e.getName(), formKeySet);
+	         		 
+			 Object[] newInstance2 = getNewInstance(formClass,countListSize);
+			 //Object newInstance3 = getNewInstance(formClass);
+			 Type genericFieldType = e.getGenericType();
+			 ParameterizedType aType = (ParameterizedType) genericFieldType;
+			    System.out.println("aType.getTypeName() :: "+aType.getTypeName());
+			     Type[] fieldArgTypes = aType.getActualTypeArguments();
+			     System.out.println("fieldArgTypes[0].getClass() :: "+fieldArgTypes[0].getClass());
+			     System.out.println("fieldArgTypes[0].getClass().getName() :: "+fieldArgTypes[0].getClass().getName());
+			 populateListAndSetToField(e, fieldArgTypes[0].getClass(), newInstance, newInstance2);
+			 System.out.println("Printing the newInstance :: "+newInstance);
+			 
+		} catch (IllegalArgumentException | IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	private int countListSize(String fieldName,Set<String> formKeySet) {
+		int count = 0;
+		List<String> list = formKeySet.stream().filter(e -> e.startsWith(fieldName+"[")).collect(Collectors.toList());
+		
+		list.forEach(System.out::println);
+		for(int i = 0; i<= list.size(); i++) {
+			for(String temp : list) {
+			    if(temp.startsWith(fieldName+"["+i+"]")) {
+			    	count++;
+			    	break;
+			    }
+			}
+		}
+		System.out.println("Printing the count ::: "+count);
+		return count;
+	}
+	
+	public void populateEntity(String key, MultiValueMap<String, Object> formData, Object root) {
+		 try {
+			 System.out.println("KEY :: "+key);
+			Object tree = Ognl.parseExpression(key);
+			Ognl.setValue(tree, root, formData.get(key).get(0));
+		} catch (OgnlException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public Object saveEntity(MultiValueMap<String, Object> formData) {
 		// List<String> list = formData.get("className");
@@ -592,5 +739,7 @@ public class JetFormServiceImpl implements JetFormService {
 		
 		return null;
 	}
+
+	
 	
 }

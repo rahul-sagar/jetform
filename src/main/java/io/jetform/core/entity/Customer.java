@@ -1,10 +1,14 @@
 package io.jetform.core.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -45,8 +49,16 @@ public class Customer {
 
 	
 	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address",relation = Relation.ONE_TO_MANY),listable=true)
-	@OneToOne(cascade = {CascadeType.ALL})
-	private Address address;
+	@OneToMany(cascade = {CascadeType.ALL})
+	private List<Address> address = new ArrayList<>();
+	
+	public List<Address> getAddress() {
+		return address;
+	}
+
+	public void setAddress(List<Address> address) {
+		this.address = address;
+	}
 
 	public Long getId() {
 		return id;
@@ -69,16 +81,14 @@ public class Customer {
 	}
 
 	public void setLastName(String lastName) {
-		lastName = lastName;
+		this.lastName = lastName;
 	}
 
-	public Address getAddress() {
-		return address;
-	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+	/*
+	 * public Address getAddress() { return address; }
+	 * 
+	 * public void setAddress(Address address) { this.address = address; }
+	 */
 
 	@Override
 	public String toString() {
