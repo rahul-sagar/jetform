@@ -192,7 +192,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		formElementWrapper.setValue(formElement.value());
 		formElementWrapper.setDependField(formElement.dependField());
 		formElementWrapper.setDependentFields(JetFormUtils.getDependentFields(formElement));
-		
+		formElementWrapper.setGroup(formElement.group());
 		return formElementWrapper;
 	}
 }

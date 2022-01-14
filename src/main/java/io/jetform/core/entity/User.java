@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.Checkbox;
 import io.jetform.core.annotation.CustomField;
 import io.jetform.core.annotation.DataProvider;
 import io.jetform.core.annotation.DependentField;
@@ -24,35 +25,56 @@ import io.jetform.core.enums.ValidationType;
 
 @Entity
 @Table(name = "tbl_User")
-@JetForm(listIndex=false,actions = { @FormAction(name = "create", action = Action.CREATE,type=Type.SUBMIT, label = "Create"),
-		@FormAction(name = "/update", action = Action.UPDATE,type=Type.BUTTON, label = "Update"),
-		@FormAction(name = "/delete", action = Action.DELETE,type=Type.BUTTON, label = "Delete"),
-		@FormAction(name = "/list", action = Action.READ,type=Type.BUTTON, label = "Read") })
+@JetForm(listIndex = false, actions = {
+		@FormAction(name = "create", action = Action.CREATE, type = Type.SUBMIT, label = "Create"),
+		@FormAction(name = "/update", action = Action.UPDATE, type = Type.BUTTON, label = "Update"),
+		@FormAction(name = "/delete", action = Action.DELETE, type = Type.BUTTON, label = "Delete"),
+		@FormAction(name = "/list", action = Action.READ, type = Type.BUTTON, label = "Read") })
 public class User {
-       
-	  @Id
-	  @GeneratedValue(strategy = GenerationType.IDENTITY)
-	  @FormElement(hidden = @Hidden(value = "0"))
-	  private long id;	
-	  
-	  @FormElement(listable = true,dependentFields = {@DependentField(child = "city",datapath = "data",type = "load")} ,select = @Select(options = { "UP:UP", "MP:MP", "UK:UK" }), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
-	  private String state;
-	   //options = { "Ghaziabad:Ghaziabad", "Bhopal:Bhopal", "Hariduar:Hariduar" }
-	  @FormElement(listable = true, select = @Select(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data",loadType = LoadType.LAZY)), validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
-	  private String city;
-	  
-	  @FormElement(listable = true, validations = {@Validation(type = ValidationType.REQUIRED, value = "true"),@Validation(type = ValidationType.MINLENGTH, value = "2")})
-	  private String street;
-	  
-	  @FormElement(listable = true, dependentFields = {@DependentField(child = "qualification",datapath = "Edu",type = "hidden"),@DependentField(child = "street",datapath = "Edu",type = "hidden")},radio = @Radio(options = { "Edu:Educated", "UnEdu:UnEducated"}))
-	  private String education;
-	  
-	  @FormElement(listable = true, select = @Select(options = {"H:High School", "Inter:InterMediate"}))
-	  private String qualification;
 
-	  @FormElement(listable = true,customField = @CustomField(filePath = "select"))//WEB-INF/jsp/select.html /file/select.html
-	  private String section;
-	  
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@FormElement(hidden = @Hidden(value = "0"))
+	private long id;
+
+	@FormElement(listable = true, dependentFields = {
+			@DependentField(child = "education", datapath = "data", type = "load") }, select = @Select(options = {
+					"UP:UP", "MP:MP", "UK:UK" }), validations = {
+							@Validation(type = ValidationType.REQUIRED, value = "true"),
+							@Validation(type = ValidationType.MINLENGTH, value = "2") })
+	private String state;
+	// options = { "Ghaziabad:Ghaziabad", "Bhopal:Bhopal", "Hariduar:Hariduar" }
+	@FormElement(listable = true, select = @Select(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data", loadType = LoadType.LAZY)), validations = {
+			@Validation(type = ValidationType.REQUIRED, value = "true"),
+			@Validation(type = ValidationType.MINLENGTH, value = "2") })
+	private String city;
+
+	@FormElement(listable = true, validations = { @Validation(type = ValidationType.REQUIRED, value = "true"),
+			@Validation(type = ValidationType.MINLENGTH, value = "2") })
+	private String street;
+	// options = { "Edu:Educated", "UnEdu:UnEducated"})
+	@FormElement(listable = true, checkbox = @Checkbox(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data", loadType = LoadType.LAZY)), dependentFields = {
+			@DependentField(child = "qualification", datapath = "Edu", type = "hidden"),
+			@DependentField(child = "street", datapath = "Edu", type = "hidden") })
+	private String education;
+
+	@FormElement(listable = true, radio = @Radio(options = { "UP:UP", "MP:MP", "UK:UK" }),dependentFields = {@DependentField(child = "qualification",datapath = "data",type = "load")})
+	private String gender;
+
+	@FormElement(listable = true, checkbox = @Checkbox(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data", loadType = LoadType.LAZY)))
+	private String qualification;
+	
+	@FormElement(listable = true, customField = @CustomField(filePath = "select")) // WEB-INF/jsp/select.html  // /file/select.html													
+	private String section;
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -85,11 +107,6 @@ public class User {
 		this.street = street;
 	}
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", city=" + city + ", state=" + state + ", street=" + street + "]";
-	}
-
 	public String getEducation() {
 		return education;
 	}
@@ -113,5 +130,5 @@ public class User {
 	public void setSection(String section) {
 		this.section = section;
 	}
- 
+
 }

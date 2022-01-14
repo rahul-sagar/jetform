@@ -47,6 +47,7 @@ import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.engine.helper.FormRenderer;
 import io.jetform.core.entity.Customer;
 import io.jetform.core.entity.DocumentMedia;
+import io.jetform.core.enums.Relation;
 import io.jetform.core.repository.DocumentMediaRepo;
 import io.jetform.core.repository.JetFormRepository;
 import io.jetform.core.service.JetFormService;
@@ -342,7 +343,7 @@ public class JetFormServiceImpl implements JetFormService {
 			  
 			Arrays.stream(clazz.getDeclaredFields())
 			         .filter(f -> f.isAnnotationPresent(FormElement.class) && !f.getAnnotation(FormElement.class).form().formClass().isEmpty())
-			         .forEach(e -> initListField(newInstance, e ,formKeySet));
+			         .forEach(e -> initTypeAndListField(newInstance, e ,formKeySet));
 			System.out.println(newInstance);
 			return newInstance;
 			
@@ -354,29 +355,37 @@ public class JetFormServiceImpl implements JetFormService {
 			return null;
 	}
 
-	private void initListField(Object newInstance, Field e, Set<String> formKeySet) {
-		e.setAccessible(true);
+	private void initTypeAndListField(Object newInstance, Field field, Set<String> formKeySet) {
+		field.setAccessible(true);
 		 System.out.println("====================================");
-		 System.out.println(e.getName());
-		 System.out.println(e.getType().getCanonicalName());
-		 System.out.println(e.getType().getSimpleName());
-		 System.out.println(e.getGenericType());
+		 System.out.println(field.getName());
+		 System.out.println(field.getType().getCanonicalName());
+		 System.out.println(field.getType().getSimpleName());
+		 System.out.println(field.getGenericType());
 		 System.out.println();
 		 System.out.println("====================================");
 		 try {
-			 String formClass = e.getAnnotation(FormElement.class).form().formClass();
-			 int countListSize = countListSize(e.getName(), formKeySet);
-	         		 
-			 Object[] newInstance2 = getNewInstance(formClass,countListSize);
-			 //Object newInstance3 = getNewInstance(formClass);
-			 Type genericFieldType = e.getGenericType();
-			 ParameterizedType aType = (ParameterizedType) genericFieldType;
-			    System.out.println("aType.getTypeName() :: "+aType.getTypeName());
-			     Type[] fieldArgTypes = aType.getActualTypeArguments();
-			     System.out.println("fieldArgTypes[0].getClass() :: "+fieldArgTypes[0].getClass());
-			     System.out.println("fieldArgTypes[0].getClass().getName() :: "+fieldArgTypes[0].getClass().getName());
-			 populateListAndSetToField(e, fieldArgTypes[0].getClass(), newInstance, newInstance2);
-			 System.out.println("Printing the newInstance :: "+newInstance);
+			 //String formClass = e.getAnnotation(FormElement.class).form().formClass();
+			 Form form = field.getAnnotation(FormElement.class).form();
+			 String formClass = form.formClass();
+			 if(form.relation().equals(Relation.ONE_TO_ONE)) {
+				     Object initNewInstance = initType(getClazz(formClass) ,formKeySet);
+				     field.set(newInstance, initNewInstance);	     
+			 }else {
+				 int countListSize = countListSize(field.getName(), formKeySet);
+         		 
+				 Object[] newInstance2 = getNewInstance(formClass,countListSize);
+				 //Object newInstance3 = getNewInstance(formClass);
+				 Type genericFieldType = field.getGenericType();
+				 ParameterizedType aType = (ParameterizedType) genericFieldType;
+				    System.out.println("aType.getTypeName() :: "+aType.getTypeName());
+				     Type[] fieldArgTypes = aType.getActualTypeArguments();
+				     System.out.println("fieldArgTypes[0].getClass() :: "+fieldArgTypes[0].getClass());
+				     System.out.println("fieldArgTypes[0].getClass().getName() :: "+fieldArgTypes[0].getClass().getName());
+				 populateListAndSetToField(field, fieldArgTypes[0].getClass(), newInstance, newInstance2);
+				 System.out.println("Printing the newInstance :: "+newInstance);
+			 }
+			 
 			 
 		} catch (IllegalArgumentException | IllegalAccessException e1) {
 			// TODO Auto-generated catch block
@@ -740,6 +749,7 @@ public class JetFormServiceImpl implements JetFormService {
 		return null;
 	}
 
+	
 	
 	
 }

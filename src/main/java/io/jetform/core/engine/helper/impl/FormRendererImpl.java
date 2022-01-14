@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormActionWrapper;
+import io.jetform.core.annotation.model.FormElementGroupWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
@@ -46,19 +47,34 @@ public class FormRendererImpl implements FormRenderer{
 	     populate(jetFormWrapper, clazz.getSimpleName(), jetForm);
 		List<FormElementWrapper> readFormElements = getFormElements(clazz);
 		jetFormWrapper.setElements(readFormElements);
+		setFormGroupElements(jetFormWrapper, readFormElements);
 		System.out.println("wrapper"+jetFormWrapper);
 		return jetFormWrapper;
+	}
+
+	private void setFormGroupElements(JetFormWrapper jetFormWrapper, List<FormElementWrapper> readFormElements) {
+		jetFormWrapper.getGroups().stream().forEach(e-> mappingFormGroupElements(e, readFormElements));
+	}
+	
+	private void mappingFormGroupElements(FormElementGroupWrapper groupWrapper,List<FormElementWrapper> elementWrappers) {
+		String id = groupWrapper.getId();
+    	List<FormElementWrapper> collect = elementWrappers.stream().filter(e-> e.getGroup().equals(id)).collect(Collectors.toList());
+    	groupWrapper.setElements(collect);
 	}
 
 	@Override
 	public JetFormWrapper getForm(JetForm jetFormAnnotation) {
 		JetFormWrapper formWrapper = new JetFormWrapper(jetFormAnnotation);
 		    
-		List<FormActionWrapper> collect = Arrays.stream(jetFormAnnotation.actions())
+		List<FormActionWrapper> formActions = Arrays.stream(jetFormAnnotation.actions())
 				                         .map(e -> new FormActionWrapper(e))
 				                         .collect(Collectors.toList());
-		formWrapper.setActions(collect);
 		
+		List<FormElementGroupWrapper> formElementGroups = Arrays.stream(jetFormAnnotation.groups())
+				                                                  .map(e-> new FormElementGroupWrapper(e))
+		                                                          .collect(Collectors.toList());
+		formWrapper.setActions(formActions);
+		formWrapper.setGroups(formElementGroups);
 		return formWrapper;
 	}
 
@@ -70,7 +86,7 @@ public class FormRendererImpl implements FormRenderer{
 		      .filter(e -> e.isAnnotationPresent(FormElement.class))
 		      .map(formElementProcessor::process)
 		      .collect(Collectors.toList()); 
-	}
+	}	
 	
 
 	private void populate(JetFormWrapper jetFormWrapper, String className, JetForm jetForm) {
@@ -89,7 +105,7 @@ public class FormRendererImpl implements FormRenderer{
 			jetFormWrapper.setFilter(jetForm.filter());
 		}
 		if(jetForm.listIndex()==jetForm.selectable()) {
-			if(jetForm.listIndex()==false) {
+			if(jetForm.listIndex() == false) {
 				jetFormWrapper.setSelectable(false);
 				jetFormWrapper.setListIndex(false);
 			}

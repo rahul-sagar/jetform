@@ -15,6 +15,7 @@ import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Validation;
 import io.jetform.core.enums.Action;
+import io.jetform.core.enums.Relation;
 import io.jetform.core.enums.Type;
 import io.jetform.core.enums.ValidationType;
 
@@ -41,8 +42,8 @@ public class Address {
 	  private String street;
 	  
 	  @OneToOne(cascade = {CascadeType.ALL})
-	  @FormElement(form = @Form(formClass = "io.jetform.core.entity.Contact"))
-	  private Contact contact;
+	  @FormElement(form = @Form(formClass = "io.jetform.core.entity.Contact",relation = Relation.ONE_TO_ONE),listable = true)
+	  private Contact contact = new Contact();
 	  
 
 	public long getId() {

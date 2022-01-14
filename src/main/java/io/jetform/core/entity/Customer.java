@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.FormElementGroup;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Validation;
@@ -29,7 +30,10 @@ import io.jetform.core.enums.ValidationType;
 		@FormAction(name = "create", action = Action.CREATE, type = Type.SUBMIT, label = "Create"),
 		@FormAction(name = "/update", action = Action.UPDATE, type = Type.BUTTON, label = "Update"),
 		@FormAction(name = "/delete", action = Action.DELETE, type = Type.BUTTON, label = "Delete"),
-		@FormAction(name = "/list", action = Action.READ, type = Type.BUTTON, label = "Read") })
+		@FormAction(name = "/list", action = Action.READ, type = Type.BUTTON, label = "Read") },
+        groups = {@FormElementGroup(id = "personal_information",elementsPerRow = 2,label = "Personal Information"),
+        		  @FormElementGroup(id = "customer_address",elementsPerRow = 1,label = "Address Info")}
+        ,formTemplate = "customer")
 public class Customer {
 
 	@Id
@@ -39,16 +43,16 @@ public class Customer {
 
 	@FormElement(listable = true, autocomplete = true, validations = {
 			@Validation(type = ValidationType.REQUIRED, value = "true"),
-			@Validation(type = ValidationType.MINLENGTH, value = "2") })
+			@Validation(type = ValidationType.MINLENGTH, value = "2") },group = "personal_information")
 	private String firstName;
 
 	@FormElement(listable = true, validations = {
 			@Validation(type = ValidationType.REQUIRED, value = "true"),
-			@Validation(type = ValidationType.MINLENGTH, value = "2") })
+			@Validation(type = ValidationType.MINLENGTH, value = "2") },group = "personal_information")
 	private String lastName;
 
 	
-	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address",relation = Relation.ONE_TO_MANY),listable=true)
+	@FormElement(form = @Form(formClass = "io.jetform.core.entity.Address",relation = Relation.ONE_TO_MANY),listable=true,group = "customer_address")
 	@OneToMany(cascade = {CascadeType.ALL})
 	private List<Address> address = new ArrayList<>();
 	
