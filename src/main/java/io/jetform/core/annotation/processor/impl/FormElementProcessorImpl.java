@@ -183,7 +183,6 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 			formElementWrapper.setPlaceHolder("Enter the " + JetFormUtils.createLabel(field.getName() + "."));
 		}
 		
-		
 		formElementWrapper.setDisabled(formElement.disabled());
 		formElementWrapper.setListable(formElement.listable());
 		formElementWrapper.setReadOnly(formElement.readOnly());
@@ -192,6 +191,8 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		formElementWrapper.setValue(formElement.value());
 		formElementWrapper.setDependField(formElement.dependField());
 		formElementWrapper.setDependentFields(JetFormUtils.getDependentFields(formElement));
+		formElementWrapper.setEvents(JetFormUtils.getFormElementEventWrapper(formElement));
+		formElementWrapper.setSubscribeEvents(JetFormUtils.getFormElementEventSubscriptionWrapper(formElement));
 		formElementWrapper.setGroup(formElement.group());
 		return formElementWrapper;
 	}

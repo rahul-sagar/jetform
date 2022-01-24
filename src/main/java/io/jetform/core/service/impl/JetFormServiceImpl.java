@@ -232,7 +232,7 @@ public class JetFormServiceImpl implements JetFormService {
 			  }else {
 				  try {
 					Object object = f.get(entity);
-					elements.stream().filter(e-> e.getName().equalsIgnoreCase(f.getName())).forEach(e -> e.setValue(object.toString()));
+					elements.stream().filter(e-> e.getName().equalsIgnoreCase(f.getName())).forEach(e -> e.setValue((object == null ? "":object.toString())));
 					  } catch (IllegalArgumentException | IllegalAccessException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

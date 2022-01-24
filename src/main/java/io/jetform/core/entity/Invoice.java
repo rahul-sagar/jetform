@@ -14,10 +14,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.CustomField;
 import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.FormElementEvent;
 import io.jetform.core.annotation.FormElementGroup;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
@@ -43,8 +45,8 @@ import io.jetform.core.enums.Type;
         		   @FormElementGroup(id = "invoice-date",label = "Invoice Date info",elementsPerRow = 1),
         		   @FormElementGroup(id = "invoice-items",label = "Invoice Item Info",elementsPerRow = 1),
         		   @FormElementGroup(id = "terms-conditions",label = "Invoice T&C ",elementsPerRow = 1),
-        		   @FormElementGroup(id = "invoice-tax",label = "Invoice Tax Detail",elementsPerRow = 1)},
-         formTemplate = "invoice")
+        		   @FormElementGroup(id = "invoice-tax",label = "Invoice Tax Detail",elementsPerRow = 1)}
+,formTemplate = "invoice")//formTemplate = "invoice"
 public class Invoice {
 
 	@Id
@@ -53,34 +55,35 @@ public class Invoice {
 	@FormElement(hidden = @Hidden(value = "0"))
 	private int id;
 
+	@Column(name = "client")
 	@FormElement(listable = true,select = @Select(options = {"TSC:TSC","WIPRO:WIPRO"}),group = "client")
 	private String client;
 
+	@Column(name = "purchaseOrder")
 	@FormElement(listable = true,select = @Select(options = {"PO1:PO - 1","PO2:PO - 2"}),group = "client")
 	private String purchaseOrder;
-
 
 	@Column(name = "invoiceNo")
 	@FormElement(listable = true,disabled = true ,group = "invoice-date")
 	private String invoiceNo;
 
 	@Column(name = "invoiceDate")
-	@FormElement(listable = true,date = @Date(format = "dd-mm-YY"),group = "invoice-date")
+	@FormElement(listable = true,date = @Date(format="yy-mm-dd"),group = "invoice-date")
 	private String invoiceDate;
 
 	@Column(name = "dueDate")
-	@FormElement(listable = true,date = @Date(format = "dd-mm-YY"),group = "invoice-date")
+	@FormElement(listable = true,date = @Date(format="yy-mm-dd"),group = "invoice-date")
 	private String dueDate;
 
 	@Column(name = "currency")
 	@FormElement(listable = true,select = @Select(options = {"D:Doller","E:Euro"}),group = "invoice-date")
 	private String currency;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "invoiceId")
 	@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.InvoiceItem",relation = Relation.ONE_TO_MANY),group = "invoice-items")
+	//@FormElement(listable = true,customField = @CustomField(filePath = "invoice-item"),group = "invoice-items")
 	private List<InvoiceItem> invoiceItems;
-	
 	
 	@Column(name = "termsConditions")
 	@FormElement(listable = true,textarea = @TextArea(rows = 5 ,cols = 10),group = "terms-conditions")
@@ -92,15 +95,18 @@ public class Invoice {
 
 	
 	@Column(name = "subTotal")
-	@FormElement(listable = true,number = @Number(format = "##"),disabled = true, group = "invoice-tax")
+	//@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax",aggregate=@Aggregate(element="invoiceItems[].amount",type=""))//emum{SUM,AVG,COUNT,MIN,max}
+	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax")//emum{SUM,AVG,COUNT,MIN,max}private double subTotal;
 	private double subTotal;
-
+	
+	
 	@OneToOne(cascade = CascadeType.ALL)
-	@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.TaxItem",relation = Relation.ONE_TO_ONE), group = "invoice-tax")
+	//@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.TaxItem",relation = Relation.ONE_TO_ONE), group = "invoice-tax")
+	@FormElement(listable = true, customField = @CustomField(filePath = "tax"), group = "invoice-tax")
 	private TaxItem taxItems;
 	
 	@Column(name = "grandTotal")
-	@FormElement(listable = true,number = @Number(format = "##"),disabled = true, group = "invoice-tax")
+	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax")
 	private double grandTotal;
 	
 	@Column(name = "advancePaid")
@@ -108,7 +114,7 @@ public class Invoice {
 	private double advancePaid;
 	
 	@Column(name = "balanceDue")
-	@FormElement(listable = true,number = @Number(format = "##"),disabled = true, group = "invoice-tax")
+	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax")
 	private double balanceDue;
 	
 	public TaxItem getTaxItems() {
@@ -235,6 +241,22 @@ public class Invoice {
 		// tempInvoiceItem.setInvoice(this);
 	}
 	
+	public String getClient() {
+		return client;
+	}
+
+	public void setClient(String client) {
+		this.client = client;
+	}
+
+	public String getPurchaseOrder() {
+		return purchaseOrder;
+	}
+
+	public void setPurchaseOrder(String purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

@@ -1,5 +1,7 @@
 package io.jetform.core.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,8 @@ import javax.persistence.Table;
 
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
+import io.jetform.core.annotation.FormElementEvent;
+import io.jetform.core.annotation.FormElementEventSubscription;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
@@ -26,17 +30,22 @@ import io.jetform.core.enums.Type;
 		@FormAction(name = "/update", action = Action.UPDATE, type = Type.BUTTON, label = "Update"),
 		@FormAction(name = "/delete", action = Action.DELETE, type = Type.BUTTON, label = "Delete"),
 		@FormAction(name = "/list", action = Action.READ, type = Type.BUTTON, label = "Read") })
-public class InvoiceItem {
+public class InvoiceItem{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@FormElement(hidden = @Hidden(value = "0"))
 	private int id;
 	
+	//@FormElement(events= {@htmlelementevent(name="onChange")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
+	@FormElement(events = {@FormElementEvent(name = "onChange")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
+	private String poi;
+	
 	@FormElement(listable = true,number = @Number(format = "##"))
 	private double amount;
 
-	@FormElement(listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
+	//@FormElement(subscribeevents= {@htmlelementeventsubscribetion(source="poi",name="onChange",action="call()")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
+	@FormElement(subscribeEvents = {@FormElementEventSubscription(source = "poi",name = "onChange",action = "poiOnchange(source)")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
 	private String descrition;
 
 	@FormElement(listable = true)
