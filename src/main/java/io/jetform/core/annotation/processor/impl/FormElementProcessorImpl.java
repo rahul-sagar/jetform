@@ -18,6 +18,7 @@ import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.Text;
 import io.jetform.core.annotation.TextArea;
 import io.jetform.core.annotation.Upload;
+import io.jetform.core.annotation.model.AggregateWrapper;
 import io.jetform.core.annotation.model.CheckBoxWrapper;
 import io.jetform.core.annotation.model.CustomFieldWrapper;
 import io.jetform.core.annotation.model.DateWrapper;
@@ -194,6 +195,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		formElementWrapper.setEvents(JetFormUtils.getFormElementEventWrapper(formElement));
 		formElementWrapper.setSubscribeEvents(JetFormUtils.getFormElementEventSubscriptionWrapper(formElement));
 		formElementWrapper.setGroup(formElement.group());
+		formElementWrapper.setAggregate(new AggregateWrapper(formElement.aggregate()));
 		return formElementWrapper;
 	}
 }

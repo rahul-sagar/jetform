@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,12 +15,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import io.jetform.core.annotation.Aggregate;
 import io.jetform.core.annotation.CustomField;
 import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormAction;
 import io.jetform.core.annotation.FormElement;
 import io.jetform.core.annotation.FormElementEvent;
+import io.jetform.core.annotation.FormElementEventSubscription;
 import io.jetform.core.annotation.FormElementGroup;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
@@ -27,6 +30,7 @@ import io.jetform.core.annotation.Number;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.TextArea;
 import io.jetform.core.enums.Action;
+import io.jetform.core.enums.AggregationType;
 import io.jetform.core.enums.Relation;
 import io.jetform.core.enums.Type;
 
@@ -60,7 +64,7 @@ public class Invoice {
 	private String client;
 
 	@Column(name = "purchaseOrder")
-	@FormElement(listable = true,select = @Select(options = {"PO1:PO - 1","PO2:PO - 2"}),group = "client")
+	@FormElement(listable = true,subscribeEvents = {@FormElementEventSubscription(source = "client",name = "onChange",action = "onClientChangeRefreshPOI(source)")},select = @Select(options = {"PO1:PO - 1","PO2:PO - 2"}),group = "client")
 	private String purchaseOrder;
 
 	@Column(name = "invoiceNo")
@@ -96,14 +100,16 @@ public class Invoice {
 	
 	@Column(name = "subTotal")
 	//@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax",aggregate=@Aggregate(element="invoiceItems[].amount",type=""))//emum{SUM,AVG,COUNT,MIN,max}
-	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax")//emum{SUM,AVG,COUNT,MIN,max}private double subTotal;
+	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax",aggregate = @Aggregate(element = "invoiceItems.amount",type = AggregationType.SUM))//emum{SUM,AVG,COUNT,MIN,max}  
 	private double subTotal;
 	
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
+	@JoinColumn(name = "invoiceId")
 	//@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.TaxItem",relation = Relation.ONE_TO_ONE), group = "invoice-tax")
-	@FormElement(listable = true, customField = @CustomField(filePath = "tax"), group = "invoice-tax")
-	private TaxItem taxItems;
+	@FormElement(listable = true,customField = @CustomField(filePath = "tax"), group = "invoice-tax",subscribeEvents = @FormElementEventSubscription(source = "client",action = "onClientChange(source)",name = "onChange"))
+	private List<InvoiceTax> invoiceTax;//customField -> Template
+	
 	
 	@Column(name = "grandTotal")
 	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax")
@@ -117,13 +123,13 @@ public class Invoice {
 	@FormElement(listable = true,number = @Number(format = "##"), group = "invoice-tax")
 	private double balanceDue;
 	
-	public TaxItem getTaxItems() {
-		return taxItems;
-	}
-
-	public void setTaxItems(TaxItem taxItems) {
-		this.taxItems = taxItems;
-	}
+	 
+	
+	/*
+	 * public TaxItem getTaxItems() { return taxItems; }
+	 * 
+	 * public void setTaxItems(TaxItem taxItems) { this.taxItems = taxItems; }
+	 */
 
 	public Invoice() {
 	}
@@ -269,7 +275,7 @@ public class Invoice {
 				.append(", balanceDue=").append(balanceDue).append(", amountReceived=")
 				.append(", advancePaid=").append(advancePaid).append(", enabled=")
 				.append(", invoiceItems=").append(invoiceItems).append(", client=").append(client)
-				.append(", purchaseOrder=").append(purchaseOrder).append(", taxItems=").append(taxItems).append("]");
+				.append(", purchaseOrder=").append(purchaseOrder).append(", taxItems=").append(invoiceTax).append("]");
 		return builder.toString();
 	}
 

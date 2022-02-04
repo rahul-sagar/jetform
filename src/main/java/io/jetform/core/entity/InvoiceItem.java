@@ -1,7 +1,5 @@
 package io.jetform.core.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,14 +36,15 @@ public class InvoiceItem{
 	private int id;
 	
 	//@FormElement(events= {@htmlelementevent(name="onChange")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
-	@FormElement(events = {@FormElementEvent(name = "onChange")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
+	@FormElement(events = {@FormElementEvent(name = "onChange")},listable = true,select = @Select(options = {"1:POI-1","2:POI-2","3:POI-3","4:POI-4"}),
+			subscribeEvents = {@FormElementEventSubscription(source = "purchaseOrder",action = "onPurchaseOrderChangeRefreshPOI(source)",name = "onChange")})
 	private String poi;
 	
 	@FormElement(listable = true,number = @Number(format = "##"))
 	private double amount;
 
 	//@FormElement(subscribeevents= {@htmlelementeventsubscribetion(source="poi",name="onChange",action="call()")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
-	@FormElement(subscribeEvents = {@FormElementEventSubscription(source = "poi",name = "onChange",action = "poiOnchange(source)")},listable = true,select = @Select(options = {"d1:des-1","d2:des-2"}))
+	@FormElement(subscribeEvents = {@FormElementEventSubscription(source = "poi",name = "onChange",action = "setPurchaseOrderItems(this)")},listable = true)
 	private String descrition;
 
 	@FormElement(listable = true)
