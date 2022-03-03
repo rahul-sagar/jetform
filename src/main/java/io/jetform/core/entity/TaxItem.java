@@ -39,8 +39,7 @@ public class TaxItem {
 	
 	@FormElement(listable = true)
 	private String amountType;
-
-
+	
 	public int getId() {
 		return id;
 	}
@@ -56,18 +55,29 @@ public class TaxItem {
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
+	
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAmountType() {
+		return amountType;
+	}
+
+	public void setAmountType(String amountType) {
+		this.amountType = amountType;
+	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("TaxItem [id=");
-		builder.append(id);
-		builder.append(", amount=");
-		builder.append(amount);
-		builder.append(", tax=");
-		builder.append("]");
-		return builder.toString();
+		return "TaxItem [id=" + id + ", name=" + name + ", amount=" + amount + ", amountType=" + amountType + "]";
 	}
+
+
 	
 }

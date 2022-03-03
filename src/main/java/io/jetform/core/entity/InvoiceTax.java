@@ -37,7 +37,7 @@ public class InvoiceTax {
 	@JoinColumn(name = "taxId")
 	//@FormElement(listable = true,readOnly = true,relation=@Relation(relatioClass=TaxItem.class,keyField="id",lableField="name"))//relation to show which field
 	@FormElement(listable = true,readOnly = true)
-	private TaxItem item;
+	private TaxItem taxItem;
 	
 	@ManyToOne
 	@JoinColumn(name = "invoiceId")
@@ -55,11 +55,11 @@ public class InvoiceTax {
 	}
 
 	public TaxItem getItem() {
-		return item;
+		return taxItem;
 	}
 
 	public void setItem(TaxItem item) {
-		this.item = item;
+		this.taxItem = item;
 	}
 
 	public Invoice getInvoice() {

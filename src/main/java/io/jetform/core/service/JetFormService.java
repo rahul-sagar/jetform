@@ -8,6 +8,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.jetform.core.annotation.model.JetFormWrapper;
+import io.jetform.core.annotation.model.RelationWrapper;
 import io.jetform.core.entity.DocumentMedia;
 
 public interface JetFormService {
@@ -24,6 +25,7 @@ public interface JetFormService {
     public List<String> getAutoCompleteSourceData(String className,String fieldName);
 	public DocumentMedia saveDocument(MultipartFile multipartFile, String uploadPath);
 	public Object saveEntityByOGNL(MultiValueMap<String, Object> formData);
+	public Map<String,String> getRelationSource(RelationWrapper relationWrapper);
 	
 	static List<String> getData(String data) {
 		System.out.println("printing the data :: "+data);

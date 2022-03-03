@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import io.jetform.core.annotation.Checkbox;
-import io.jetform.core.annotation.CustomField;
+import io.jetform.core.annotation.Template;
 import io.jetform.core.annotation.DataProvider;
 import io.jetform.core.annotation.DependentField;
 import io.jetform.core.annotation.FormAction;
@@ -64,7 +64,7 @@ public class User {
 	@FormElement(listable = true, checkbox = @Checkbox(dataProvider = @DataProvider(resource = ResourceType.REST, path = "data", loadType = LoadType.LAZY)))
 	private String qualification;
 	
-	@FormElement(listable = true, customField = @CustomField(filePath = "select")) // WEB-INF/jsp/select.html  // /file/select.html													
+	@FormElement(listable = true, template = @Template(filePath = "select")) // WEB-INF/jsp/select.html  // /file/select.html													
 	private String section;
 
 	public String getGender() {

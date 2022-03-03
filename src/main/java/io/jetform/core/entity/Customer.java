@@ -33,7 +33,7 @@ import io.jetform.core.enums.ValidationType;
 		@FormAction(name = "/list", action = Action.READ, type = Type.BUTTON, label = "Read") },
         groups = {@FormElementGroup(id = "personal_information",elementsPerRow = 2,label = "Personal Information"),
         		  @FormElementGroup(id = "customer_address",elementsPerRow = 1,label = "Address Info")}
-        ,formTemplate = "customer")
+      )//  ,formTemplate = "customer")
 public class Customer {
 
 	@Id

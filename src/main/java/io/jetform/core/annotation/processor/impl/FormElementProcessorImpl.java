@@ -1,12 +1,18 @@
 package io.jetform.core.annotation.processor.impl;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.jetform.core.annotation.Checkbox;
-import io.jetform.core.annotation.CustomField;
+import io.jetform.core.annotation.Template;
 import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.Email;
 import io.jetform.core.annotation.Form;
@@ -20,7 +26,7 @@ import io.jetform.core.annotation.TextArea;
 import io.jetform.core.annotation.Upload;
 import io.jetform.core.annotation.model.AggregateWrapper;
 import io.jetform.core.annotation.model.CheckBoxWrapper;
-import io.jetform.core.annotation.model.CustomFieldWrapper;
+import io.jetform.core.annotation.model.TemplateWrapper;
 import io.jetform.core.annotation.model.DateWrapper;
 import io.jetform.core.annotation.model.EmailWrapper;
 import io.jetform.core.annotation.model.FormElementWrapper;
@@ -29,19 +35,27 @@ import io.jetform.core.annotation.model.HiddenWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
 import io.jetform.core.annotation.model.NumberWrapper;
 import io.jetform.core.annotation.model.RadioWrapper;
+import io.jetform.core.annotation.model.RelationWrapper;
 import io.jetform.core.annotation.model.SelectWrapper;
 import io.jetform.core.annotation.model.TextAreaWrapper;
 import io.jetform.core.annotation.model.TextWrapper;
 import io.jetform.core.annotation.model.UploadWrapper;
 import io.jetform.core.annotation.processor.FormElementProcessor;
 import io.jetform.core.engine.helper.FormRenderer;
+import io.jetform.core.enums.Relation;
 import io.jetform.core.helperclasses.JetFormUtils;
+import io.jetform.core.repository.JetFormRepository;
+import io.jetform.core.service.JetFormService;
+import io.jetform.util.ApplicationProperties;
 
 @Component
 public class FormElementProcessorImpl implements FormElementProcessor {
 
 	@Autowired
 	private FormRenderer formRenderer;
+	
+	@Autowired
+	private JetFormService jetFormService;
 	
 	@Override
 	public FormElementWrapper process(Field field) {
@@ -59,7 +73,16 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 
 
 	private SelectWrapper process(Select select) {
-		return new SelectWrapper(select);
+		SelectWrapper selectWrapper = new SelectWrapper(select);
+		String path = selectWrapper.getBundle().getPath();
+		
+		if(!path.isEmpty()) {
+			ApplicationProperties properties = new ApplicationProperties(path);
+			String property = properties.getProperty(selectWrapper.getBundle().getKey());
+			String[] options = properties.getOptions(property);
+			selectWrapper.setOptions(options);
+		}
+		return selectWrapper;
 	}
 
 
@@ -86,6 +109,10 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 	}
 
 	private FormWrapper process(Form form) {
+		if(form.relation().equals(Relation.MANY_TO_ONE)) {
+			System.out.println("printing the jetFormWrapper :: form.relation().equals(Relation.MANY_TO_ONE");
+			return new FormWrapper(form);
+		}
 		JetFormWrapper jetFormWrapper = formRenderer.getForm(form.formClass());
 		System.out.println("printing the jetFormWrapper :: FormWrapper process(Form form)");
 		System.out.println(jetFormWrapper);
@@ -105,8 +132,8 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		return new DateWrapper(date);
 	}
 	
-	private CustomFieldWrapper process(CustomField customField) {
-		return new CustomFieldWrapper(customField);
+	private TemplateWrapper process(Template template) {
+		return new TemplateWrapper(template);
 	}
 	
 	private UploadWrapper process(Upload upload) {		
@@ -136,8 +163,8 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		else if (!formElement.date().format().isEmpty()) 
 			return process(formElement.date());
 		
-		else if (!formElement.customField().filePath().isEmpty()) 
-			return process(formElement.customField());
+		else if (!formElement.template().filePath().isEmpty()) 
+			return process(formElement.template());
 		
 		else if (!formElement.hidden().value().isEmpty()) 
 			return process(formElement.hidden());
@@ -152,7 +179,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 			return process(formElement.checkbox());
 		
 		else if ((!formElement.select().dataProvider().path().isEmpty())
-				^ formElement.select().options().length > 0)
+				^ formElement.select().options().length > 0 || !formElement.select().bundle().path().isEmpty())
 			return process(formElement.select());
 		 
 		else if (!(formElement.upload().dataProvider().path().isEmpty())) 
@@ -184,6 +211,7 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 			formElementWrapper.setPlaceHolder("Enter the " + JetFormUtils.createLabel(field.getName() + "."));
 		}
 		
+		checkRelation(formElementWrapper,formElement);
 		formElementWrapper.setDisabled(formElement.disabled());
 		formElementWrapper.setListable(formElement.listable());
 		formElementWrapper.setReadOnly(formElement.readOnly());
@@ -196,6 +224,32 @@ public class FormElementProcessorImpl implements FormElementProcessor {
 		formElementWrapper.setSubscribeEvents(JetFormUtils.getFormElementEventSubscriptionWrapper(formElement));
 		formElementWrapper.setGroup(formElement.group());
 		formElementWrapper.setAggregate(new AggregateWrapper(formElement.aggregate()));
+		
 		return formElementWrapper;
 	}
+	
+	private void checkRelation(FormElementWrapper formElementWrapper, FormElement formElement) {
+		if(formElement.relation().relationClass() != Object.class) {
+			//formElementWrapper.setRelationWrapper(new RelationWrapper(formElement.relation()));
+			checkFieldtype(formElementWrapper,new RelationWrapper(formElement.relation()));
+		}
+	}
+	
+	private void checkFieldtype(FormElementWrapper formElementWrapper, RelationWrapper relationWrapper) {
+		if(formElementWrapper.getFieldType().equalsIgnoreCase("select")) {
+			SelectWrapper selectWrapper	=(SelectWrapper)formElementWrapper;
+			Map<String, String> relationSource = jetFormService.getRelationSource(relationWrapper);
+			System.out.println(relationSource);
+		
+			List<String> collect = relationSource.entrySet().stream()
+			                                                   .map(e-> e.getKey()+":"+e.getValue())
+			                                                   .collect(Collectors.toList());
+			String[] array = collect.toArray(new String[0]);
+			selectWrapper.setOptions(array);
+			formElementWrapper.setRelationWrapper(new RelationWrapper(relationWrapper.getKeyField(),relationWrapper.getLabelField()));
+		}
+		
+	}
+	
+	
 }

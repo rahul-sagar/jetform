@@ -11,12 +11,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import io.jetform.core.annotation.Aggregate;
-import io.jetform.core.annotation.CustomField;
+import io.jetform.core.annotation.Template;
 import io.jetform.core.annotation.Date;
 import io.jetform.core.annotation.Form;
 import io.jetform.core.annotation.FormAction;
@@ -27,6 +28,7 @@ import io.jetform.core.annotation.FormElementGroup;
 import io.jetform.core.annotation.Hidden;
 import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.Number;
+import io.jetform.core.annotation.OptionsBundle;
 import io.jetform.core.annotation.Select;
 import io.jetform.core.annotation.TextArea;
 import io.jetform.core.enums.Action;
@@ -59,9 +61,20 @@ public class Invoice {
 	@FormElement(hidden = @Hidden(value = "0"))
 	private int id;
 
-	@Column(name = "client")
-	@FormElement(listable = true,select = @Select(options = {"TSC:TSC","WIPRO:WIPRO"}),group = "client")
-	private String client;
+	
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+//,bundle=@bun(path="properties.file",key="key-name"))  options = {"1:TSC","2:WIPRO"}
+	@FormElement(listable = true,select = @Select(bundle = @OptionsBundle(path = "config",key = "clients")),group = "client")
+	//relation = @io.jetform.core.annotation.Relation(relationClass = Client.class, keyField = "id",labelField ="name"))//,filter = {"status=true","type=12,22"}
+	@ManyToOne
+	@JoinColumn(name = "clientId")
+	private Client client;
 
 	@Column(name = "purchaseOrder")
 	@FormElement(listable = true,subscribeEvents = {@FormElementEventSubscription(source = "client",name = "onChange",action = "onClientChangeRefreshPOI(source)")},select = @Select(options = {"PO1:PO - 1","PO2:PO - 2"}),group = "client")
@@ -85,7 +98,7 @@ public class Invoice {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "invoiceId")
-	@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.InvoiceItem",relation = Relation.ONE_TO_MANY),group = "invoice-items")
+	@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.InvoiceItem",relation = Relation.ONE_TO_MANY,inline = true),group = "invoice-items")///madel false 
 	//@FormElement(listable = true,customField = @CustomField(filePath = "invoice-item"),group = "invoice-items")
 	private List<InvoiceItem> invoiceItems;
 	
@@ -107,8 +120,8 @@ public class Invoice {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "invoiceId")
 	//@FormElement(listable = true,form = @Form(formClass = "io.jetform.core.entity.TaxItem",relation = Relation.ONE_TO_ONE), group = "invoice-tax")
-	@FormElement(listable = true,customField = @CustomField(filePath = "tax"), group = "invoice-tax",subscribeEvents = @FormElementEventSubscription(source = "client",action = "onClientChange(source)",name = "onChange"))
-	private List<InvoiceTax> invoiceTax;//customField -> Template
+	@FormElement(listable = true,template = @Template(filePath = "tax"), group = "invoice-tax",subscribeEvents = @FormElementEventSubscription(source = "client",action = "onClientChange10(source)",name = "onChange"))
+	private List<InvoiceTax> invoiceTax; //customField -> Template
 	
 	
 	@Column(name = "grandTotal")
@@ -246,13 +259,13 @@ public class Invoice {
 		invoiceItems.add(tempInvoiceItem);
 		// tempInvoiceItem.setInvoice(this);
 	}
-	
-	public String getClient() {
-		return client;
+
+	public List<InvoiceTax> getInvoiceTax() {
+		return invoiceTax;
 	}
 
-	public void setClient(String client) {
-		this.client = client;
+	public void setInvoiceTax(List<InvoiceTax> invoiceTax) {
+		this.invoiceTax = invoiceTax;
 	}
 
 	public String getPurchaseOrder() {

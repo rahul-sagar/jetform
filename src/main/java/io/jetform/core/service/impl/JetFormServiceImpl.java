@@ -19,11 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.activation.FileDataSource;
+import javax.persistence.Id;
 
 import org.aspectj.apache.bcel.generic.RET;
 import org.hibernate.internal.build.AllowSysOut;
@@ -44,6 +46,7 @@ import io.jetform.core.annotation.JetForm;
 import io.jetform.core.annotation.model.FormElementWrapper;
 import io.jetform.core.annotation.model.FormWrapper;
 import io.jetform.core.annotation.model.JetFormWrapper;
+import io.jetform.core.annotation.model.RelationWrapper;
 import io.jetform.core.engine.helper.FormRenderer;
 import io.jetform.core.entity.Customer;
 import io.jetform.core.entity.DocumentMedia;
@@ -136,15 +139,15 @@ public class JetFormServiceImpl implements JetFormService {
 
 	@Override
 	public List<?> getList(String className) {
-		Class<?> forName = null;
+		Class<?> clazz = null;
 
 		try {
-			forName = Class.forName(className);
+			clazz = Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return repository.getAll(forName);
+		return repository.getAll(clazz);
 	}
 
 	@Override
@@ -368,7 +371,7 @@ public class JetFormServiceImpl implements JetFormService {
 			 //String formClass = e.getAnnotation(FormElement.class).form().formClass();
 			 Form form = field.getAnnotation(FormElement.class).form();
 			 String formClass = form.formClass();
-			 if(form.relation().equals(Relation.ONE_TO_ONE)) {
+			 if(form.relation().equals(Relation.ONE_TO_ONE) || form.relation().equals(Relation.MANY_TO_ONE)) {
 				     Object initNewInstance = initType(getClazz(formClass) ,formKeySet);
 				     field.set(newInstance, initNewInstance);	     
 			 }else {
@@ -748,8 +751,141 @@ public class JetFormServiceImpl implements JetFormService {
 		
 		return null;
 	}
+	
+	class RelationFilter {
+		String key;
+		boolean multiple;
+		String[] values;
+		public RelationFilter() {
+			// TODO Auto-generated constructor stub
+		}
+		
+		public RelationFilter(String key, boolean multiple, String[] values) {
+			super();
+			this.key = key;
+			this.multiple = multiple;
+			this.values = values;
+		}
 
+		public String getKey() {
+			return key;
+		}
+		public void setKey(String key) {
+			this.key = key;
+		}
+		public boolean isMultiple() {
+			return multiple;
+		}
+		public void setMultiple(boolean multiple) {
+			this.multiple = multiple;
+		}
+		public String[] getValues() {
+			return values;
+		}
+		public void setValues(String[] values) {
+			this.values = values;
+		}
+		
+	}
+
+	@Override
+	public Map<String, String> getRelationSource(RelationWrapper relationWrapper) {
+		
+		Map<String, String> relationSource = new TreeMap<>();
+		Class<?> relationClass = relationWrapper.getRelationClass();
+		
+		List<?> list = repository.getAll(relationClass);
+		/*
+		 * List<?> collect = list.stream() .filter(relationClass::isInstance)
+		 * .map(relationClass::cast) .collect(Collectors.toList());
+		 */
+		List<RelationFilter> relationFilters = new ArrayList<JetFormServiceImpl.RelationFilter>();
+		Map<String,String[]> map = new TreeMap<>();
+ 		relationWrapper = checkKeyFieldPresent(relationWrapper);
+		String[] filter = relationWrapper.getFilter();
+		Arrays.stream(filter).forEach(f -> {
+			if(f.contains(",")) {
+				String[] split = f.split("=");
+				String key = split[0];
+				String[] values = split[1].split(",");
+				map.put(key, values);
+				//relationFilters.add(new RelationFilter(key, false, values));
+			}else {
+				String[] split = f.split("=");
+				String key = split[0];
+				String value = split[1];
+				map.put(key, new String[] {value});
+				//relationFilters.add(new RelationFilter(key, false, new String[] {value}));
+			}
+		});
+		
+		for (Object object : list) {
+			Class<? extends Object> clazz = object.getClass();
+			System.out.println("printing the class " + clazz.getName());
+			System.out.println(clazz.getTypeName());
+			try {
+				
+				int count = 0;
+				for(String key : map.keySet()) {
+					System.out.println("Searching filter in object : "+object);
+					Field filterKey = clazz.getDeclaredField(key);
+					filterKey.setAccessible(true);
+					Object filterKeyValue = filterKey.get(object);
+					String[] values = map.get(key);
+					if(isValuePresent(values,filterKeyValue.toString())) {
+						System.out.println("Filter find with key : "+key+ " | value " + Arrays.toString(values) + " | in : "+object);
+						count++;
+					}
+				}
+				
+				if(count == map.size()) {
+				Field keyField = clazz.getDeclaredField(relationWrapper.getKeyField());
+				Field lableField = clazz.getDeclaredField(relationWrapper.getLabelField());
+				
+				keyField.setAccessible(true);
+				lableField.setAccessible(true);
+				Object keyFieldValue = keyField.get(object);
+				Object lableFieldValue = lableField.get(object);
+				relationSource.put(keyFieldValue.toString(), lableFieldValue.toString());
+					
+				}
+				
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return relationSource;
+	}
 	
+	private boolean isValuePresent(String[] strArray,String key) {
+		for(String tempString : strArray) {
+			if(tempString.equalsIgnoreCase(key))
+				return true;
+		}
+		return false;
+	}
 	
+	private RelationWrapper checkKeyFieldPresent(RelationWrapper relationWrapper) {
+		System.out.println("Printing RelationWrapper before :: "+relationWrapper);
+		if(relationWrapper.getKeyField().equalsIgnoreCase("") && relationWrapper.getLabelField().equalsIgnoreCase("")) {
+			Class<?> relationClass = relationWrapper.getRelationClass();
+			String id = Arrays.stream(relationClass.getDeclaredFields())
+			                .filter(f-> f.isAnnotationPresent(Id.class))
+			                .map(f->f.getName()).findFirst().orElseThrow();
+			relationWrapper.setKeyField(id);
+			relationWrapper.setLabelField("name");
+			System.out.println("Inside checkKeyFieldPresent(RelationWrapper relationWrapper) :: "+relationWrapper);
+		}
+		
+		System.out.println("Printing RelationWrapper After :: "+relationWrapper);
+		return relationWrapper;
+	}
 	
 }
